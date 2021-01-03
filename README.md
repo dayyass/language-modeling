@@ -7,12 +7,12 @@ Language Modeling is the task of evaluating the probability distribution over a 
 - [ ] GPT Language Model
 
 ### Usage
-####Training:
+Training:
 ```
-python train.py --path "data/arxiv.txt" --n 3
+python train.py --path "data/arxiv.txt" --n 3 --path_to_save "models/language_model.pkl" --verbose True
 ```
 Available argumets:
-- *--path*, type=str, required=True, help="path to train data"
-- *--n*, type=int, required=True, help="n-gram order"
-- *--path_to_save*, type=str, required=False, default="models/language_model.pkl", help="path to save model"
-- *--verbose*, type=bool, required=False, default=True, help="verbose"
+- **--path** - path to train data
+- **--n** - n-gram order
+- **--path_to_save** - path to save model
+- **--verbose** - verbose
