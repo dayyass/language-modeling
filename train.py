@@ -24,5 +24,7 @@ if __name__ == "__main__":
 
     # save
     os.makedirs("models", exist_ok=True)  # hardcoded "models" directory
+    if os.path.exists(args.path_to_save):  # check path_to_save existence
+        raise FileExistsError("save path already exists")
     with open(args.path_to_save, "wb") as fp:
         pickle.dump(language_model, fp)
