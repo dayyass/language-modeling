@@ -41,7 +41,7 @@ def compute_perplexity(
             prefix = ngram[:-1]
             next_token = ngram[-1]
             prob = language_model.get_next_token_prob(" ".join(prefix), next_token)
-            log_prob = max(min_logprob, np.log(prob))
+            log_prob = max(min_logprob, np.log(prob) if prob != 0.0 else -np.inf)
             log_likelihood += log_prob
     perplexity = np.exp(-1 / N * log_likelihood)
     return perplexity
