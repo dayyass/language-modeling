@@ -77,7 +77,7 @@ class NGramLanguageModel:
         # pad sentence beginning with BOS
         prefix_list = (self.n - 1) * [self.BOS] + prefix.split()
         # fmt: off
-        prefix_tuple = tuple(prefix_list[-self.n:])
+        prefix_tuple = tuple(prefix_list[-self.n + 1:])
         # fmt: on
         return self.probs[prefix_tuple]
 
