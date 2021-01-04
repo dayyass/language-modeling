@@ -38,5 +38,5 @@ python inference.py --path_to_model "models/language_model.pkl" --prefix "" --te
 Available argumets:
 - **--path_to_model** - path to language model
 - **--prefix** - prefix before sequence generation (default: *""*)
-- **--temperature** - sampling temperature (default: *1.0*)
+- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token (default: *1.0*)
 - **--max_length** - max number of generated words (default: *100*)

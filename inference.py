@@ -16,6 +16,13 @@ def get_next_token(
 ) -> str:
     """
     Sample word using language model, prefix and temperature.
+
+    :param NGramLanguageModel language_model: language model
+    :param str prefix: prefix before sequence generation
+    :param float temperature: sampling temperature,
+        if temperature == 0.0, always takes most likely token (default: 1.0)
+    :return: next token
+    :rtype: str
     """
     token2prob = language_model.get_possible_next_tokens(prefix)
     tokens = list(token2prob.keys())
@@ -40,6 +47,15 @@ def generate(
 ) -> str:
     """
     Generate sentence using language model.
+
+    :param NGramLanguageModel language_model: language model
+    :param str prefix: prefix before sequence generation
+    :param float temperature: sampling temperature,
+        if temperature == 0.0, always takes most likely token (default: 1.0)
+    :param int max_length: max number of generated words (default: 100)
+    :param str EOS: end-of-sentence token (default: "<EOS>")
+    :return: generated sequence
+    :rtype: str
     """
     for _ in range(max_length):
         next_token = get_next_token(language_model, prefix, temperature=temperature)
