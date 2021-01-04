@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ```
 
 #### Training
-Script for training language models.
+Script for training language models:
 ```
 python train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "models/3_gram_language_model.pkl" --verbose True
 ```
@@ -25,7 +25,7 @@ Available argumets:
 - **--verbose** - verbose (default: *True*)
 
 #### Validation
-Script for validation language models using perplexity.
+Script for validation language models using perplexity:
 ```
 python validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl" --verbose True
 ```
@@ -35,7 +35,7 @@ Available argumets:
 - **--verbose** - verbose (default: *True*)
 
 #### Inference
-Script for generation new sequences using language models.
+Script for generation new sequences using language models:
 ```
 python inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.0 --max_length 100
 ```
