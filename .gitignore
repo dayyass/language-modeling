@@ -8,3 +8,4 @@
 /models/
 /data/*
 !/data/README.md
+!/data/train_test_split.py

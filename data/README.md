@@ -8,3 +8,16 @@ Corpora of ArXiv articles:
 
 ### Data Format
 Prepared text file with space separated words on each line.
+Data preparation is performed on the user's side.
+
+### Train/Test Split
+Script for train/test split.
+```
+python train_test_split.py --path_to_data "arxiv.txt" --test_size 0.25 --random_state 42 --shuffle True --verbose True
+```
+Available argumets:
+- **--path_to_data** - path to data
+- **--test_size** - test size
+- **--random_state** - random state (default: *42*)
+- **--shuffle** - shuffle (default: *True*)
+- **--verbose** - verbose (default: *True*)
