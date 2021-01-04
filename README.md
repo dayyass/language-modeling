@@ -9,7 +9,7 @@ First, install dependencies:
 git clone https://github.com/dayyass/language_modeling.git
 
 # install dependencies   
-cd pytorch_ner
+cd language_modeling
 pip install -r requirements.txt
 ```
 
