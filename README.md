@@ -16,6 +16,15 @@ Available argumets:
 - **--path_to_save** - path to save model
 - **--verbose** - verbose
 
+### Validation
+```
+python validate.py --path_to_data "data/arxiv.txt" --path_to_model "models/language_model.pkl" --verbose True
+```
+Available argumets:
+- **--path_to_data** - path to train data
+- **--path_to_model** - path to language model
+- **--verbose** - verbose
+
 ### Inference
 ```
 python inference.py --path_to_model "models/language_model.pkl" --prefix "" --temperature 1.0 --max_length 100

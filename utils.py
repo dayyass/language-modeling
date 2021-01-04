@@ -49,6 +49,31 @@ def get_train_args() -> Namespace:
     return args
 
 
+def get_validate_args() -> Namespace:
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--path_to_data",
+        type=str,
+        required=True,
+        help="path to train data",
+    )
+    parser.add_argument(
+        "--path_to_model",
+        type=str,
+        required=True,
+        help="path to language model",
+    )
+    parser.add_argument(
+        "--verbose",
+        type=bool,
+        required=False,
+        default=True,
+        help="verbose",
+    )
+    args = parser.parse_args()
+    return args
+
+
 def get_inference_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument(

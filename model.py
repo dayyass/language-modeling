@@ -22,7 +22,9 @@ def count_ngrams(
     for sentence in data:
         sentence = (n - 1) * [BOS] + sentence + [EOS]  # pad sentence beginning with BOS
         for ngram in ngrams(sentence, n):
-            counts[ngram[:-1]].update([ngram[-1]])
+            prefix = ngram[:-1]
+            next_token = ngram[-1]
+            counts[prefix].update([next_token])
     return counts
 
 
