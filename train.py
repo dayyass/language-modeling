@@ -2,7 +2,7 @@ import os
 import pickle
 
 from model import NGramLanguageModel
-from utils import get_args, load_data
+from utils import get_train_args, load_data
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded
@@ -10,10 +10,10 @@ EOS = "<EOS>"  # hardcoded
 if __name__ == "__main__":
 
     # argparse
-    args = get_args()
+    args = get_train_args()
 
     # load data
-    data = load_data(path=args.path, verbose=args.verbose)
+    data = load_data(path=args.path_to_data, verbose=args.verbose)
 
     # train
     language_model = NGramLanguageModel(
