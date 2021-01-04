@@ -6,7 +6,7 @@ Language Modeling is the task of evaluating the probability distribution over a 
 First, install dependencies:
 ```
 # clone repo   
-git clone git@github.com:dayyass/language_modeling.git
+git clone https://github.com/dayyass/language_modeling.git
 
 # install dependencies   
 cd pytorch_ner
