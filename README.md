@@ -55,6 +55,6 @@ More about it [here](data/README.md).
 
 ### Models
 List of implemented models:
-- [x] N-gram Language Model
+- [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
 - [ ] RNN Language Model
 - [ ] GPT Language Model
