@@ -7,7 +7,7 @@ Corpora of ArXiv articles:
 - [prepared data](https://drive.google.com/file/d/1dgTxPNKQG8aHDYOLeHNqYz2XRCv82liM/view?usp=sharing)
 
 ### Data Format
-Prepared text file with space separated words on each line.
+Prepared text file with space separated words on each line.<br/>
 Data preparation is performed on the user's side.
 
 ### Train/Test Split
