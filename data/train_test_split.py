@@ -12,6 +12,13 @@ from utils import load_data  # noqa: E402
 
 
 def save_data(data: List[List[str]], path: str, verbose: bool = True) -> None:
+    """
+    Save data.
+
+    :param List[List[str]] data: data to save
+    :param str path: path to save
+    :param bool verbose: verbose (default: True)
+    """
     with open(path, "w") as fp:
         if verbose:
             data = tqdm(data, desc="save data")
@@ -21,6 +28,12 @@ def save_data(data: List[List[str]], path: str, verbose: bool = True) -> None:
 
 
 def get_args() -> Namespace:
+    """
+    Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_data",

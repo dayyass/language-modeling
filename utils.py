@@ -7,6 +7,11 @@ from tqdm import tqdm
 def load_data(path: str, verbose: bool = True) -> List[List[str]]:
     """
     Load data.
+
+    :param str path: path to load data
+    :param bool verbose: verbose (default: True)
+    :return: data
+    :rtype: List[List[str]]
     """
     data = []
     with open(path, mode="r") as fp:
@@ -18,6 +23,12 @@ def load_data(path: str, verbose: bool = True) -> List[List[str]]:
 
 
 def get_train_args() -> Namespace:
+    """
+    Training Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_data",
@@ -50,6 +61,12 @@ def get_train_args() -> Namespace:
 
 
 def get_validate_args() -> Namespace:
+    """
+    Validation Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_data",
@@ -75,6 +92,12 @@ def get_validate_args() -> Namespace:
 
 
 def get_inference_args() -> Namespace:
+    """
+    Inference Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_model",
@@ -93,8 +116,8 @@ def get_inference_args() -> Namespace:
         "--temperature",
         type=float,
         required=False,
-        default=1.0,
-        help="sampling temperature",
+        default=0.0,
+        help="sampling temperature, if temperature == 0, always takes most likely token - greedy decoding",
     )
     parser.add_argument(
         "--max_length",
