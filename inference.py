@@ -5,6 +5,9 @@ import numpy as np
 from model import NGramLanguageModel
 from utils import get_inference_args
 
+BOS = "<BOS>"  # hardcoded
+EOS = "<EOS>"  # hardcoded
+
 
 def get_next_token(
     language_model: NGramLanguageModel,
@@ -50,7 +53,6 @@ def generate(
 
 
 if __name__ == "__main__":
-    EOS = "<EOS>"  # hardcoded
 
     # argparse
     args = get_inference_args()
