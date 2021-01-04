@@ -116,8 +116,8 @@ def get_inference_args() -> Namespace:
         "--temperature",
         type=float,
         required=False,
-        default=1.0,
-        help="sampling temperature, if temperature == 0, always takes most likely token",
+        default=0.0,
+        help="sampling temperature, if temperature == 0, always takes most likely token - greedy decoding",
     )
     parser.add_argument(
         "--max_length",
