@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from model import NGramLanguageModel
+from model import LaplaceLanguageModel, NGramLanguageModel
 from utils import get_train_args, load_data
 
 BOS = "<BOS>"  # hardcoded
@@ -20,9 +20,24 @@ if __name__ == "__main__":
     data = load_data(path=args.path_to_data, verbose=args.verbose)
 
     # train
-    language_model = NGramLanguageModel(
-        data=data, n=args.n, BOS=BOS, EOS=EOS, verbose=args.verbose
-    )
+    if args.smoothing is None:
+        language_model = NGramLanguageModel(
+            data=data, n=args.n, BOS=BOS, EOS=EOS, verbose=args.verbose
+        )
+    elif args.smoothing == "add-k":
+        language_model = LaplaceLanguageModel(
+            data=data,
+            n=args.n,
+            delta=args.delta,
+            BOS=BOS,
+            EOS=EOS,
+            verbose=args.verbose,
+        )
+    else:
+        raise NotImplementedError(
+            f"{args.smoothing} smoothing method is not implemented, "
+            "use 'add-k' for Laplace smoothing or None in order to not to use any smoothing method"
+        )
 
     # save
     os.makedirs("models", exist_ok=True)  # hardcoded "models" directory

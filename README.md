@@ -5,10 +5,10 @@ Language Modeling is the task of evaluating the probability distribution over a 
 ### Usage
 First, install dependencies:
 ```
-# clone repo   
+# clone repo
 git clone https://github.com/dayyass/language_modeling.git
 
-# install dependencies   
+# install dependencies
 cd language_modeling
 pip install -r requirements.txt
 ```
@@ -21,6 +21,8 @@ python train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "mode
 Available argumets:
 - **--path_to_data** - path to train data
 - **--n** - n-gram order
+- **--smoothing** - smoothing method (available: "add-k") (default: *None*)
+- **--delta** - smoothing additive parameter (only for add-k smoothing) (default: 1.0)
 - **--path_to_save** - path to save model (default: *"models/language_model.pkl"*)
 - **--verbose** - verbose (default: *True*)
 
@@ -58,3 +60,10 @@ List of implemented models:
 - [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
 - [ ] RNN Language Model
 - [ ] GPT Language Model
+
+### Smoothing (only for N-gram Language Models)
+- [x] no smoothing
+- [x] add-k / Laplace smoothing
+- [ ] interpolation smoothing
+- [ ] back-off / Katz smoothing
+- [ ] Kneser-Ney smoothing

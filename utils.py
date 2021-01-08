@@ -56,6 +56,20 @@ def get_train_args() -> Namespace:
         default=True,
         help="verbose",
     )
+    parser.add_argument(
+        "--smoothing",
+        type=str,
+        required=False,
+        default=None,
+        help="smoothing method (available: 'add-k')",
+    )
+    parser.add_argument(
+        "--delta",
+        type=float,
+        required=False,
+        default=1.0,
+        help="add-k smoothing additive parameter",
+    )
     args = parser.parse_args()
     return args
 
