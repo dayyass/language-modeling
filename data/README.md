@@ -11,7 +11,7 @@ Corpora of ArXiv articles:
 - [prepared data](https://drive.google.com/file/d/1dgTxPNKQG8aHDYOLeHNqYz2XRCv82liM/view?usp=sharing)
 
 ### Train/Test Split
-Script for train/test split.
+Script for train/test split (run from data folder):
 ```
 python train_test_split.py --path_to_data "arxiv.txt" --test_size 0.25 --random_state 42 --shuffle True --verbose True
 ```

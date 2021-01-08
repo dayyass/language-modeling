@@ -16,12 +16,12 @@ pip install -r requirements.txt
 #### Training
 Script for training language models:
 ```
-python train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "models/3_gram_language_model.pkl" --verbose True
+python statistical_lm/train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "models/3_gram_language_model.pkl" --verbose True
 ```
 Available argumets:
 - **--path_to_data** - path to train data
 - **--n** - n-gram order
-- **--smoothing** - smoothing method (available: "add-k") (default: *None*)
+- **--smoothing** - smoothing method (available: None, "add-k") (default: *None*)
 - **--delta** - smoothing additive parameter (only for add-k smoothing) (default: 1.0)
 - **--path_to_save** - path to save model (default: *"models/language_model.pkl"*)
 - **--verbose** - verbose (default: *True*)
@@ -29,7 +29,7 @@ Available argumets:
 #### Validation
 Script for validation language models using perplexity:
 ```
-python validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl" --verbose True
+python statistical_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl" --verbose True
 ```
 Available argumets:
 - **--path_to_data** - path to train data
@@ -39,7 +39,7 @@ Available argumets:
 #### Inference
 Script for generation new sequences using language models:
 ```
-python inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.0 --max_length 100
+python statistical_lm/inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.0 --max_length 100
 ```
 Available argumets:
 - **--path_to_model** - path to language model

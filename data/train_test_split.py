@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 # TODO: fix
 sys.path.append("..")
-from utils import load_data  # noqa: E402
+from statistical_lm.utils import load_data  # noqa: E402
 
 
 def save_data(data: List[List[str]], path: str, verbose: bool = True) -> None:

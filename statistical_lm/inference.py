@@ -1,7 +1,6 @@
 import pickle
 
 import numpy as np
-
 from model import NGramLanguageModel
 from utils import get_inference_args
 

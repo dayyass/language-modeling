@@ -2,10 +2,9 @@ import pickle
 from typing import List
 
 import numpy as np
+from model import NGramLanguageModel
 from nltk import ngrams
 from tqdm import tqdm
-
-from model import NGramLanguageModel
 from utils import get_validate_args, load_data
 
 BOS = "<BOS>"  # hardcoded
