@@ -5,6 +5,8 @@ from typing import DefaultDict, Dict, List, Tuple
 from nltk import ngrams
 from tqdm import tqdm
 
+from smoothing import add_k_smoothing, no_smoothing
+
 
 def count_ngrams(
     data: List[List[str]],
@@ -36,24 +38,6 @@ def count_ngrams(
     return counts
 
 
-def counts2probs(
-    counts: DefaultDict[Tuple[str], CounterType[str]],
-) -> DefaultDict[Tuple[str, ...], Dict[str, float]]:
-    """
-    Transform word counts to probabilities.
-
-    :param counts: mapping from (n - 1) previous words to number of times each word occurred after
-    :return: mapping from (n - 1) previous words to probability of each word occurred after
-    :rtype: DefaultDict[Tuple[str, ...], Dict[str, float]]
-    """
-    probs: DefaultDict[Tuple[str, ...], Dict[str, float]] = defaultdict(dict)
-    for prefix in counts.keys():
-        denominator = sum(counts[prefix].values())
-        for next_word in counts[prefix].keys():
-            probs[prefix][next_word] = counts[prefix][next_word] / denominator
-    return probs
-
-
 class NGramLanguageModel:
     """
     N-gram Language Model.
@@ -80,7 +64,7 @@ class NGramLanguageModel:
         self.BOS = BOS
         self.EOS = EOS
 
-        self.probs = counts2probs(
+        self.probs = no_smoothing(
             count_ngrams(
                 data=data,
                 n=n,
@@ -115,3 +99,78 @@ class NGramLanguageModel:
         :rtype: float
         """
         return self.get_possible_next_tokens(prefix).get(next_token, 0)
+
+
+class LaplaceLanguageModel(NGramLanguageModel):
+    """
+    N-gram Language Model with add-k (Laplace) smoothing.
+    """
+
+    # no super().__init__()
+    def __init__(
+        self,
+        data: List[List[str]],
+        n: int,
+        delta: float = 1.0,
+        BOS: str = "<BOS>",
+        EOS: str = "<EOS>",
+        verbose: bool = True,
+    ):
+        """
+        Init model with probabilities of word occurred after (n - 1) previous words.
+
+        :param List[List[str]] data: training data
+        :param int n: n-gram order
+        :param float delta: add-k (Laplace) smoothing additive parameter (default: 1.0)
+        :param str BOS: begin-of-sentence token (default: "<BOS>")
+        :param str EOS: end-of-sentence token (default: "<EOS>")
+        :param bool verbose: verbose (default: True)
+        """
+        self.n = n
+        self.delta = delta
+        self.BOS = BOS
+        self.EOS = EOS
+
+        self.vocab, self.probs = add_k_smoothing(
+            count_ngrams(
+                data=data,
+                n=n,
+                BOS=BOS,
+                EOS=EOS,
+                verbose=verbose,
+            ),
+            delta=delta,
+        )
+
+    def get_possible_next_tokens(self, prefix: str) -> Dict[str, float]:
+        """
+        Get words distribution after particular (n - 1) previous words prefix.
+
+        :param str prefix: prefix before sequence generation
+        :return: words distribution after particular (n - 1) previous words prefix
+        :rtype: Dict[str, float]
+        """
+        probs = super().get_possible_next_tokens(prefix)
+        missing_prob_total = 1.0 - sum(probs.values())
+        missing_prob_total = max(0.0, missing_prob_total)  # prevent rounding errors
+        missing_prob = missing_prob_total / max(1, len(self.vocab) - len(probs))
+        add_k_probs = {token: probs.get(token, missing_prob) for token in self.vocab}
+        return add_k_probs
+
+    def get_next_token_prob(self, prefix: str, next_token: str) -> float:
+        """
+        Get probability of particular word occurred after particular (n - 1) previous words.
+
+        :param str prefix: prefix before sequence generation
+        :param str next_token: particular word
+        :return: probability of particular word occurred after particular (n - 1) previous words
+        :rtype: float
+        """
+        probs = super().get_possible_next_tokens(prefix)
+        if next_token in probs:
+            return probs[next_token]
+        else:
+            missing_prob_total = 1.0 - sum(probs.values())
+            missing_prob_total = max(0.0, missing_prob_total)  # prevent rounding errors
+            missing_prob = missing_prob_total / max(1, len(self.vocab) - len(probs))
+            return missing_prob
