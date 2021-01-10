@@ -125,3 +125,38 @@ class LMCollator(object):
         )
 
         return sentences
+
+
+def infer_lengths(
+    sentences: torch.Tensor,
+    eos_id: int,
+) -> torch.Tensor:
+    """
+    Compute length of each sentence in sentences (incl. first EOS).
+
+    :param torch.Tensor sentences: sentences of shape [batch_size, seq_len]
+    :param int eos_id: end-of-sentence token index
+    :return: length of each sentence in sentences (incl. first EOS) of shape [batch_size]
+    :rtype: torch.Tensor
+    """
+
+    lengths = torch.sum(sentences != eos_id, dim=-1) + 1
+    return lengths
+
+
+def masking(lengths: torch.Tensor) -> torch.Tensor:
+    """
+    Convert lengths tensor to binary mask to compute loss without pad tokens.
+    implement: https://stackoverflow.com/questions/53403306/how-to-batch-convert-sentence-lengths-to-masks-in-pytorch
+
+    :param torch.Tensor lengths: lengths of each sentence
+    :return: binary mask to compute loss without pad tokens
+    :rtype: torch.Tensor
+    """
+
+    device = lengths.device
+    lengths_shape = lengths.shape[0]
+    max_len = lengths.max()
+    return torch.arange(end=max_len, device=device).expand(
+        size=(lengths_shape, max_len)
+    ) < lengths.unsqueeze(1)
