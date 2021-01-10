@@ -1,3 +1,5 @@
+import json
+import os
 from collections import defaultdict
 from typing import Callable, DefaultDict, List
 
@@ -8,7 +10,17 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from utils import infer_lengths, masking
+from model import RNNLanguageModel
+from utils import (
+    LMCollator,
+    LMDataset,
+    get_char2idx,
+    get_train_args,
+    infer_lengths,
+    load_data,
+    masking,
+    set_global_seed,
+)
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded
@@ -33,7 +45,7 @@ def train_epoch(
     :param optim.Optimizer optimizer: PyTorch Optimizer
     :param torch.device device: PyTorch Device
     :param int train_eval_freq: evaluation frequency (number of batches) (default: 50)
-    :param float clip_grad_norm: max_norm param in clip_grad_norm (default: 1.0)
+    :param float clip_grad_norm: max_norm parameter in clip_grad_norm (default: 1.0)
     :param bool verbose: verbose (default: True)
     :return: metrics dict
     :rtype: DefaultDict[str, List[float]]
@@ -116,7 +128,7 @@ def train(
     :param optim.Optimizer optimizer: PyTorch Optimizer
     :param torch.device device: PyTorch Device
     :param int train_eval_freq: evaluation frequency (number of batches) (default: 50)
-    :param float clip_grad_norm: max_norm param in clip_grad_norm (default: 1.0)
+    :param float clip_grad_norm: max_norm parameter in clip_grad_norm (default: 1.0)
     :param bool verbose: verbose (default: True)
     """
 
@@ -141,3 +153,78 @@ def train(
             for metric_name, metric_list in metrics.items():
                 print(f"train {metric_name}: {np.mean(metric_list)}")
             print()
+
+
+if __name__ == "__main__":
+
+    # argparse
+    args = get_train_args()
+
+    # check path_to_save existence
+    if os.path.exists(args.path_to_save_folder):
+        raise FileExistsError("save path folder already exists")
+
+    # set seed and device
+    set_global_seed(args.seed)
+    device = torch.device(args.device)
+
+    # load data
+    data = load_data(path=args.path_to_data, verbose=args.verbose)
+
+    # char2idx
+    char2idx = get_char2idx(data, BOS=BOS, EOS=EOS, verbose=args.verbose)
+
+    # dataset, collator, dataloader
+    train_dataset = LMDataset(
+        data,
+        char2idx,
+        max_len=args.max_len,
+        BOS=BOS,
+        EOS=EOS,
+        verbose=args.verbose,
+    )
+    train_collator = LMCollator(
+        padding_value=char2idx[EOS],
+    )
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=args.shuffle,
+        collate_fn=train_collator,
+    )
+
+    # model
+    model = RNNLanguageModel(
+        num_embeddings=len(char2idx),
+        embedding_dim=args.embedding_dim,
+        rnn_hidden_size=args.rnn_hidden_size,
+        rnn_num_layers=args.rnn_num_layers,
+        rnn_dropout=args.rnn_dropout,
+    ).to(device)
+
+    # criterion and optimizer
+    criterion = nn.CrossEntropyLoss(reduction="none")  # use mask for reduction
+    optimizer = optim.Adam(model.parameters())
+
+    # train
+    train_epoch(
+        model=model,
+        dataloader=train_loader,
+        criterion=criterion,
+        optimizer=optimizer,
+        device=device,
+        train_eval_freq=args.train_eval_freq,
+        clip_grad_norm=args.clip_grad_norm,
+        verbose=args.verbose,
+    )
+
+    # save
+    os.makedirs(args.path_to_save_folder, exist_ok=True)
+    # # model
+    torch.save(
+        model.eval().cpu().state_dict(),
+        os.path.join(args.path_to_save_folder, "language_model.pth"),
+    )
+    # # vocab char2idx
+    with open(os.path.join(args.path_to_save_folder, "vocab.json"), "w") as fp:
+        json.dump(char2idx, fp)

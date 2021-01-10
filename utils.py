@@ -1,4 +1,5 @@
 import random
+from argparse import ArgumentParser, Namespace
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -19,6 +20,125 @@ def set_global_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+
+
+def get_train_args() -> Namespace:
+    """
+    Training Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
+
+    parser = ArgumentParser()
+
+    # path
+    parser.add_argument(
+        "--path_to_data",
+        type=str,
+        required=True,
+        help="path to train data",
+    )
+    parser.add_argument(
+        "--path_to_save_folder",
+        type=str,
+        required=False,
+        default="models/rnn_language_model",
+        help="path to save folder",
+    )
+
+    # dataset and dataloader
+    parser.add_argument(
+        "--max_len",
+        type=int,
+        required=False,
+        default=None,
+        help="max sentence length (chars)",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        required=True,
+        help="dataloader batch_size",
+    )
+    parser.add_argument(
+        "--shuffle",
+        type=bool,
+        required=False,
+        default=True,
+        help="dataloader shuffle",
+    )
+
+    # model
+    parser.add_argument(
+        "--embedding_dim",
+        type=int,
+        required=True,
+        help="embedding dimension",
+    )
+    parser.add_argument(
+        "--rnn_hidden_size",
+        type=int,
+        required=True,
+        help="LSTM hidden size",
+    )
+    parser.add_argument(
+        "--rnn_num_layers",
+        type=int,
+        required=False,
+        default=1,
+        help="number of LSTM layers",
+    )
+    parser.add_argument(
+        "--rnn_dropout",
+        type=float,
+        required=False,
+        default=0.0,
+        help="LSTM dropout",
+    )
+
+    # train
+    parser.add_argument(
+        "--train_eval_freq",
+        type=int,
+        required=False,
+        default=50,
+        help="evaluation frequency (number of batches)",
+    )
+    parser.add_argument(
+        "--clip_grad_norm",
+        type=float,
+        required=False,
+        default=1.0,
+        help="max_norm parameter in clip_grad_norm",
+    )
+
+    # additional
+    parser.add_argument(
+        "--seed",
+        type=int,
+        required=False,
+        default=42,
+        help="random seed",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        required=False,
+        default="cuda",
+        choices=["cpu", "cuda"],
+        help="torch device (available: 'cpu', 'cuda')",
+    )
+    parser.add_argument(
+        "--verbose",
+        type=bool,
+        required=False,
+        default=True,
+        help="verbose",
+    )
+
+    args = parser.parse_args()
+    return args
 
 
 def load_data(path: str, verbose: bool = True) -> List[str]:
@@ -89,7 +209,7 @@ class LMDataset(Dataset):
 
         :param List[str] data: data
         :param Dict[str, int] char2idx: char to idx mapping
-        :param Optional[int] max_len: max sentence length
+        :param Optional[int] max_len: max sentence length (chars)
         :param str BOS: begin-of-sentence token (default: "<BOS>")
         :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
