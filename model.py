@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
-from utils import infer_lengths
-
 
 class RNNLanguageModel(nn.Module):
     """
@@ -44,23 +42,22 @@ class RNNLanguageModel(nn.Module):
         )
         self.logits = nn.Linear(rnn_hidden_size, num_embeddings)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
         """
         Compute logits given input tokens.
 
         :param torch.Tensor x: batch of sequences with token indices
+        :param torch.Tensor lengths: length of each sentence in batch
         :return: pre-softmax linear outputs of language model
         :rtype: torch.Tensor
         """
-
-        lengths = infer_lengths(x, eos_id=x[0][-1].item())  # last element always EOS
 
         emb = self.emb(x)
         packed_emb = pack_padded_sequence(
             emb, lengths, batch_first=True, enforce_sorted=False
         )
         packed_rnn, _ = self.rnn(packed_emb)
-        rnn = pad_packed_sequence(
+        rnn, _ = pad_packed_sequence(
             packed_rnn, batch_first=True, padding_value=0.0  # hardcoded
         )
         logits = self.logits(rnn)
