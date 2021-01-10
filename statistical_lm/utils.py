@@ -50,18 +50,12 @@ def get_train_args() -> Namespace:
         help="path to save model",
     )
     parser.add_argument(
-        "--verbose",
-        type=bool,
-        required=False,
-        default=True,
-        help="verbose",
-    )
-    parser.add_argument(
         "--smoothing",
         type=str,
         required=False,
         default=None,
-        help="smoothing method (available: 'add-k')",
+        choices=[None, "add-k"],
+        help="smoothing method (available: None, 'add-k')",
     )
     parser.add_argument(
         "--delta",
@@ -69,6 +63,13 @@ def get_train_args() -> Namespace:
         required=False,
         default=1.0,
         help="add-k smoothing additive parameter",
+    )
+    parser.add_argument(
+        "--verbose",
+        type=bool,
+        required=False,
+        default=True,
+        help="verbose",
     )
     args = parser.parse_args()
     return args
