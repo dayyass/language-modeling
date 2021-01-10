@@ -194,13 +194,14 @@ if __name__ == "__main__":
     )
 
     # model
-    model = RNNLanguageModel(
-        num_embeddings=len(char2idx),
-        embedding_dim=args.embedding_dim,
-        rnn_hidden_size=args.rnn_hidden_size,
-        rnn_num_layers=args.rnn_num_layers,
-        rnn_dropout=args.rnn_dropout,
-    ).to(device)
+    model_parameters = {
+        "num_embeddings": len(char2idx),
+        "embedding_dim": args.embedding_dim,
+        "rnn_hidden_size": args.rnn_hidden_size,
+        "rnn_num_layers": args.rnn_num_layers,
+        "rnn_dropout": args.rnn_dropout,
+    }
+    model = RNNLanguageModel(**model_parameters).to(device)
 
     # criterion and optimizer
     criterion = nn.CrossEntropyLoss(reduction="none")  # use mask for reduction
@@ -220,11 +221,17 @@ if __name__ == "__main__":
 
     # save
     os.makedirs(args.path_to_save_folder, exist_ok=True)
-    # # model
-    torch.save(
-        model.eval().cpu().state_dict(),
-        os.path.join(args.path_to_save_folder, "language_model.pth"),
-    )
+
+    # # model state_dict
+    path = os.path.join(args.path_to_save_folder, "language_model.pth")
+    torch.save(model.eval().cpu().state_dict(), path)
+
+    # # model parameters
+    path = os.path.join(args.path_to_save_folder, "model_parameters.json")
+    with open(path, mode="w") as fp:
+        json.dump(model_parameters, fp)
+
     # # vocab char2idx
-    with open(os.path.join(args.path_to_save_folder, "vocab.json"), "w") as fp:
+    path = os.path.join(args.path_to_save_folder, "vocab.json")
+    with open(path, mode="w") as fp:
         json.dump(char2idx, fp)

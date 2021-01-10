@@ -13,8 +13,8 @@ class RNNLanguageModel(nn.Module):
         num_embeddings: int,
         embedding_dim: int,
         rnn_hidden_size: int,
-        rnn_num_layers: int,
-        rnn_dropout: float,
+        rnn_num_layers: int = 1,
+        rnn_dropout: float = 0.0,
     ):
         """
         Init model with nn.Embedding, nn.LSTM and nn.Linear.

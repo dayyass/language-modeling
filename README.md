@@ -63,7 +63,7 @@ artificial intelligence ( ai ) is a challenging task . <EOS>
 #### Training
 Script for training RNN language models:
 ```
-python train.py --path_to_data "data/arxiv_test.txt" --path_to_save_folder "models/rnn_language_model" --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
+python neural_lm/train.py --path_to_data "data/arxiv_test.txt" --path_to_save_folder "models/rnn_language_model" --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
 ```
 Required arguments:
 - **--path_to_data** - path to train data
