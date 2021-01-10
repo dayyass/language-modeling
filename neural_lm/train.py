@@ -10,8 +10,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from model import RNNLanguageModel
-from utils import (
+from model import RNNLanguageModel  # isort:skip
+from utils import (  # isort:skip
     LMCollator,
     LMDataset,
     get_char2idx,
