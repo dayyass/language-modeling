@@ -1,9 +1,24 @@
+import random
 from typing import Dict, List, Optional
 
+import numpy as np
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 from tqdm import tqdm
+
+
+def set_global_seed(seed: int):
+    """
+    Set global seed for reproducibility.
+    """
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
 
 
 def load_data(path: str, verbose: bool = True) -> List[str]:
@@ -129,18 +144,23 @@ class LMCollator(object):
 
 def infer_lengths(
     sentences: torch.Tensor,
+    bos_id: int,
     eos_id: int,
 ) -> torch.Tensor:
     """
-    Compute length of each sentence in sentences (incl. first EOS).
+    Compute length of each sentence in sentences (excl. EOS).
 
     :param torch.Tensor sentences: sentences of shape [batch_size, seq_len]
+    :param int bos_id: begin-of-sentence token index
     :param int eos_id: end-of-sentence token index
-    :return: length of each sentence in sentences (incl. first EOS) of shape [batch_size]
+    :return: length of each sentence in sentences (excl. EOS) of shape [batch_size]
     :rtype: torch.Tensor
     """
 
-    lengths = torch.sum(sentences != eos_id, dim=-1) + 1
+    lengths = torch.sum(
+        torch.logical_and(sentences != bos_id, sentences != eos_id),
+        dim=-1,
+    )
     return lengths
 
 
