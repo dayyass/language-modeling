@@ -3,8 +3,9 @@ from typing import Counter as CounterType
 from typing import DefaultDict, Dict, List, Tuple
 
 from nltk import ngrams
-from smoothing import add_k_smoothing, no_smoothing
 from tqdm import tqdm
+
+from smoothing import add_k_smoothing, no_smoothing  # isort:skip
 
 BOS = "<BOS>"
 EOS = "<EOS>"
