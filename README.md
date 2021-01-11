@@ -55,7 +55,7 @@ Optional arguments:
 - **--max_length** - max number of generated words (default: *100*)
 - **--seed** - random seed (default: *42*)
 
-Command output with 3-gram language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
+Command output with 3-gram language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and temperature 0.5:
 ```
 artificial neural network ( cnn ) architectures on h2o platform for real - world applications . <EOS>
 ```
@@ -115,7 +115,7 @@ Optional arguments:
 - **--seed** - random seed (default: *42*)
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 
-Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
+Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and temperature 0.5:
 ```
 artificial visual information of the number , using an intervidence for detection for order to the recognition
 ```
@@ -126,7 +126,7 @@ More about it [here](data/README.md).
 ### Models
 List of implemented models:
 - [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
-- [x] RNN Language Model (char-based)
+- [x] [RNN Language Model](https://github.com/dayyass/language_modeling/blob/407d02b79d6d7fd614dc7c5fd235ad269cddcb2d/neural_lm/model.py#L6) (char-based)
 - [ ] GPT Language Model
 
 ### Smoothing (only for N-gram Language Models)
