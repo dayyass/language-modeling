@@ -17,7 +17,7 @@ pip install -r requirements.txt
 #### Training
 Script for training statistical language models:
 ```
-python statistical_lm/train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "models/3_gram_language_model.pkl" --verbose True
+python statistical_lm/train.py --path_to_data "data/arxiv_train.txt" --n 3 --path_to_save "models/3_gram_language_model.pkl"
 ```
 Required arguments:
 - **--path_to_data** - path to train data
@@ -32,7 +32,7 @@ Optional arguments:
 #### Validation
 Script for validation statistical language models using perplexity:
 ```
-python statistical_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl" --verbose True
+python statistical_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl"
 ```
 Required arguments:
 - **--path_to_data** - path to validation data
@@ -53,6 +53,7 @@ Optional arguments:
 - **--prefix** - prefix before sequence generation (default: *""*)
 - **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (default: *0.0*)
 - **--max_length** - max number of generated words (default: *100*)
+- **--seed** - random seed (default: *42*)
 
 Command output with 3-gram language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
 ```
@@ -63,10 +64,11 @@ artificial intelligence ( ai ) is a challenging task . <EOS>
 #### Training
 Script for training RNN language models:
 ```
-python neural_lm/train.py --path_to_data "data/arxiv_test.txt" --path_to_save_folder "models/rnn_language_model" --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
+python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 10 --max_len 512 --batch_size 128 --embedding_dim 32 --rnn_hidden_size 256
 ```
 Required arguments:
 - **--path_to_data** - path to train data
+- **--n_epoch** - number of epochs
 - **--batch_size** - dataloader batch_size
 - **--embedding_dim** - embedding dimension
 - **--rnn_hidden_size** - LSTM hidden size
@@ -100,7 +102,7 @@ Optional arguments:
 #### Inference
 Script for generation new sequences using neural language models:
 ```
-python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.0 --max_length 100
+python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5 --max_length 512
 ```
 Required arguments:
 - **--path_to_model_folder** - path to language model folder
@@ -112,10 +114,13 @@ Optional arguments:
 - **--seed** - random seed (default: *42*)
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 
-# TODO: fix (and verbose)
 Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
 ```
-artificial intelligence ( ai ) is a challenging task . <EOS>
+artificial content of inference in the adaptive detection of the constraint and previous approach to implementation of
+a special interaction to computer output ( sequeries description of the specifically used in the search and problem of
+multi - stationary bound to computational models ; we propose a new manifold - to - active and the distributions of
+the regions and the computational convolutional neural networks . this paper presents a new approximation of
+deep neural networks ; this paper developed and th
 ```
 
 ### Data Format
