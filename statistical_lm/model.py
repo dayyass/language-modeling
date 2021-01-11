@@ -6,12 +6,13 @@ from nltk import ngrams
 from smoothing import add_k_smoothing, no_smoothing
 from tqdm import tqdm
 
+BOS = "<BOS>"
+EOS = "<EOS>"
+
 
 def count_ngrams(
     data: List[List[str]],
     n: int,
-    BOS: str = "<BOS>",
-    EOS: str = "<EOS>",
     verbose: bool = True,
 ) -> DefaultDict[Tuple[str], CounterType[str]]:
     """
@@ -19,22 +20,23 @@ def count_ngrams(
 
     :param List[List[str]] data: training data
     :param int n: n-gram order
-    :param str BOS: begin-of-sentence token (default: "<BOS>")
-    :param str EOS: end-of-sentence token (default: "<EOS>")
     :param bool verbose: verbose (default: True)
     :return: mapping from (n - 1) previous words to number of times each word occurred after
     :rtype: DefaultDict[Tuple[str], CounterType[str]]
     """
 
     counts: DefaultDict[Tuple[str], CounterType[str]] = defaultdict(Counter)
+
     if verbose:
         data = tqdm(data, desc="count n-grams")
+
     for sentence in data:
         sentence = (n - 1) * [BOS] + sentence + [EOS]  # pad sentence beginning with BOS
         for ngram in ngrams(sentence, n):
             prefix = ngram[:-1]
             next_token = ngram[-1]
             counts[prefix].update([next_token])
+
     return counts
 
 
@@ -47,8 +49,6 @@ class NGramLanguageModel:
         self,
         data: List[List[str]],
         n: int,
-        BOS: str = "<BOS>",
-        EOS: str = "<EOS>",
         verbose: bool = True,
     ):
         """
@@ -56,8 +56,6 @@ class NGramLanguageModel:
 
         :param List[List[str]] data: training data
         :param int n: n-gram order
-        :param str BOS: begin-of-sentence token (default: "<BOS>")
-        :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
         """
 
@@ -69,8 +67,6 @@ class NGramLanguageModel:
             count_ngrams(
                 data=data,
                 n=n,
-                BOS=BOS,
-                EOS=EOS,
                 verbose=verbose,
             )
         )
@@ -89,6 +85,7 @@ class NGramLanguageModel:
         # fmt: off
         prefix_tuple = tuple(prefix_list[-self.n + 1:])
         # fmt: on
+
         return self.probs[prefix_tuple]
 
     def get_next_token_prob(self, prefix: str, next_token: str) -> float:
@@ -115,8 +112,6 @@ class LaplaceLanguageModel(NGramLanguageModel):
         data: List[List[str]],
         n: int,
         delta: float = 1.0,
-        BOS: str = "<BOS>",
-        EOS: str = "<EOS>",
         verbose: bool = True,
     ):
         """
@@ -125,8 +120,6 @@ class LaplaceLanguageModel(NGramLanguageModel):
         :param List[List[str]] data: training data
         :param int n: n-gram order
         :param float delta: add-k (Laplace) smoothing additive parameter (default: 1.0)
-        :param str BOS: begin-of-sentence token (default: "<BOS>")
-        :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
         """
 
@@ -139,8 +132,6 @@ class LaplaceLanguageModel(NGramLanguageModel):
             count_ngrams(
                 data=data,
                 n=n,
-                BOS=BOS,
-                EOS=EOS,
                 verbose=verbose,
             ),
             delta=delta,
@@ -156,10 +147,14 @@ class LaplaceLanguageModel(NGramLanguageModel):
         """
 
         probs = super().get_possible_next_tokens(prefix)
+
         missing_prob_total = 1.0 - sum(probs.values())
         missing_prob_total = max(0.0, missing_prob_total)  # prevent rounding errors
+
         missing_prob = missing_prob_total / max(1, len(self.vocab) - len(probs))
+
         add_k_probs = {token: probs.get(token, missing_prob) for token in self.vocab}
+
         return add_k_probs
 
     def get_next_token_prob(self, prefix: str, next_token: str) -> float:
@@ -173,10 +168,13 @@ class LaplaceLanguageModel(NGramLanguageModel):
         """
 
         probs = super().get_possible_next_tokens(prefix)
+
         if next_token in probs:
-            return probs[next_token]
+            next_token_prob = probs[next_token]
         else:
             missing_prob_total = 1.0 - sum(probs.values())
             missing_prob_total = max(0.0, missing_prob_total)  # prevent rounding errors
             missing_prob = missing_prob_total / max(1, len(self.vocab) - len(probs))
-            return missing_prob
+            next_token_prob = missing_prob
+
+        return next_token_prob

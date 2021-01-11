@@ -19,11 +19,11 @@ class RNNLanguageModel(nn.Module):
         """
         Init model with nn.Embedding, nn.LSTM and nn.Linear.
 
-        :param num_embeddings: vocabulary size
-        :param embedding_dim: embedding dimension
-        :param rnn_hidden_size: LSTM hidden size
-        :param rnn_num_layers: number of LSTM layers
-        :param rnn_dropout: LSTM dropout
+        :param int num_embeddings: vocabulary size
+        :param int embedding_dim: embedding dimension
+        :param int rnn_hidden_size: LSTM hidden size
+        :param int rnn_num_layers: number of LSTM layers (default: 1)
+        :param float rnn_dropout: LSTM dropout (default: 0.0)
         """
 
         super().__init__()
@@ -52,7 +52,10 @@ class RNNLanguageModel(nn.Module):
         :rtype: torch.Tensor
         """
 
+        # embedding
         emb = self.emb(x)
+
+        # rnn
         packed_emb = pack_padded_sequence(
             emb, lengths, batch_first=True, enforce_sorted=False
         )
@@ -60,5 +63,8 @@ class RNNLanguageModel(nn.Module):
         rnn, _ = pad_packed_sequence(
             packed_rnn, batch_first=True, padding_value=0.0  # hardcoded
         )
+
+        # linear
         logits = self.logits(rnn)
+
         return logits
