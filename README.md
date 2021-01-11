@@ -44,7 +44,7 @@ Optional arguments:
 #### Inference
 Script for generation new sequences using statistical language models:
 ```
-python statistical_lm/inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.0 --max_length 100
+python statistical_lm/inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.5 --max_length 100
 ```
 Required arguments:
 - **--path_to_model** - path to language model
@@ -86,7 +86,7 @@ Optional arguments:
 - **--verbose** - verbose (default: *True*)
 
 #### Validation
-Script for validation neural language models using perplexity:
+Script for validation RNN language models using perplexity:
 ```
 python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --verbose True
 ```
@@ -100,7 +100,7 @@ Optional arguments:
 - **--verbose** - verbose (default: *True*)
 
 #### Inference
-Script for generation new sequences using neural language models:
+Script for generation new sequences using RNN language models:
 ```
 python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5 --max_length 512
 ```
