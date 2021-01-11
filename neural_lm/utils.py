@@ -141,6 +141,53 @@ def get_train_args() -> Namespace:
     return args
 
 
+def get_validate_args() -> Namespace:
+    """
+    Validation Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--path_to_data",
+        type=str,
+        required=True,
+        help="path to validation data",
+    )
+    parser.add_argument(
+        "--path_to_model_folder",
+        type=str,
+        required=True,
+        help="path to language model folder",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        required=False,
+        default=42,
+        help="random seed",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        required=False,
+        default="cuda",
+        choices=["cpu", "cuda"],
+        help="torch device (available: 'cpu', 'cuda')",
+    )
+    parser.add_argument(
+        "--verbose",
+        type=bool,
+        required=False,
+        default=True,
+        help="verbose",
+    )
+    args = parser.parse_args()
+    return args
+
+
 def get_inference_args() -> Namespace:
     """
     Inference Argument Parser.
@@ -211,7 +258,7 @@ def load_data(path: str, verbose: bool = True) -> List[str]:
         if verbose:
             fp = tqdm(fp, desc="load data")
         for line in fp:
-            data.append(line)
+            data.append(line.strip())
     return data
 
 

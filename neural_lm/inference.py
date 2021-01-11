@@ -21,16 +21,17 @@ def str2tensor(
     Transform string to idx tensor using char2idx.
 
     :param str string: string to transform
-    :param char2idx: char to idx mapping
+    :param Dict[str, int] char2idx: char to idx mapping
     :param str BOS: begin-of-sentence token (default: "<BOS>")
     :return: idx tensor
     :rtype: torch.Tensor
     """
 
     string_idx = [char2idx[BOS]] + [char2idx[char] for char in string]
-    string_idx_tensor = torch.tensor(string_idx, dtype=torch.long,).unsqueeze(
-        0
-    )  # batch_size = 1
+    string_idx_tensor = torch.tensor(
+        string_idx,
+        dtype=torch.long,
+    ).unsqueeze(0)
 
     return string_idx_tensor
 
@@ -53,7 +54,9 @@ def get_possible_next_tokens(
     device = next(model.parameters()).device
 
     prefix_idx_tensor = str2tensor(prefix, char2idx).to(device)
-    lengths = torch.tensor([len(prefix)], dtype=torch.long, device=device)
+    lengths = torch.tensor(
+        [len(prefix) + 1], dtype=torch.long, device=device
+    )  # add BOS
 
     with torch.no_grad():
         probs = torch.softmax(model(prefix_idx_tensor, lengths), dim=-1)
@@ -63,6 +66,34 @@ def get_possible_next_tokens(
     char2prob = {char: probs[i] for i, char in enumerate(char2idx.keys())}
 
     return char2prob
+
+
+def get_next_token_prob(
+    model: nn.Module,
+    char2idx: Dict[str, int],
+    prefix: str,
+    next_token: str,
+) -> float:
+    """
+    Get probability of particular token occurred after all previous tokens.
+
+    :param nn.Module model: RNN Language Model
+    :param Dict[str, int] char2idx: char to idx mapping
+    :param str prefix: all previous tokens prefix
+    :param str next_token: particular token
+    :return: probability of particular token occurred after all previous tokens
+    :rtype: float
+    """
+
+    char2prob = get_possible_next_tokens(
+        model=model,
+        char2idx=char2idx,
+        prefix=prefix,
+    )
+
+    next_token_prob = char2prob.get(next_token, 0.0)
+
+    return next_token_prob
 
 
 def generate(

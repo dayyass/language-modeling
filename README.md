@@ -35,7 +35,7 @@ Script for validation statistical language models using perplexity:
 python statistical_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model "models/3_gram_language_model.pkl" --verbose True
 ```
 Required arguments:
-- **--path_to_data** - path to train data
+- **--path_to_data** - path to validation data
 - **--path_to_model** - path to language model
 
 Optional arguments:
@@ -83,6 +83,20 @@ Optional arguments:
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 - **--verbose** - verbose (default: *True*)
 
+#### Validation
+Script for validation neural language models using perplexity:
+```
+python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --verbose True
+```
+Required arguments:
+- **--path_to_data** - path to validation data
+- **--path_to_model** - path to language model
+
+Optional arguments:
+- **--seed** - random seed (default: *42*)
+- **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
+- **--verbose** - verbose (default: *True*)
+
 #### Inference
 Script for generation new sequences using neural language models:
 ```
@@ -98,7 +112,7 @@ Optional arguments:
 - **--seed** - random seed (default: *42*)
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 
-# TODO: fix
+# TODO: fix (and verbose)
 Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
 ```
 artificial intelligence ( ai ) is a challenging task . <EOS>
