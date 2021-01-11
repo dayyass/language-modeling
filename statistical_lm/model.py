@@ -101,7 +101,7 @@ class NGramLanguageModel:
         :rtype: float
         """
 
-        return self.get_possible_next_tokens(prefix).get(next_token, 0)
+        return self.get_possible_next_tokens(prefix).get(next_token, 0.0)
 
 
 class LaplaceLanguageModel(NGramLanguageModel):

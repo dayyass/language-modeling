@@ -90,7 +90,7 @@ def get_validate_args() -> Namespace:
         "--path_to_data",
         type=str,
         required=True,
-        help="path to train data",
+        help="path to validation data",
     )
     parser.add_argument(
         "--path_to_model",
