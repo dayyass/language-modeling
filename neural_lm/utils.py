@@ -1,5 +1,4 @@
 import random
-from argparse import ArgumentParser, Namespace
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -7,6 +6,9 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 from tqdm import tqdm
+
+BOS = "<BOS>"
+EOS = "<EOS>"
 
 
 def set_global_seed(seed: int):
@@ -20,227 +22,6 @@ def set_global_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
-
-
-def get_train_args() -> Namespace:
-    """
-    Training Argument Parser.
-
-    :return: parsed arguments
-    :rtype: Namespace
-    """
-
-    parser = ArgumentParser()
-
-    # path
-    parser.add_argument(
-        "--path_to_data",
-        type=str,
-        required=True,
-        help="path to train data",
-    )
-    parser.add_argument(
-        "--path_to_save_folder",
-        type=str,
-        required=False,
-        default="models/rnn_language_model",
-        help="path to save folder",
-    )
-
-    # dataset and dataloader
-    parser.add_argument(
-        "--max_len",
-        type=int,
-        required=False,
-        default=None,
-        help="max sentence length (chars)",
-    )
-    parser.add_argument(
-        "--batch_size",
-        type=int,
-        required=True,
-        help="dataloader batch_size",
-    )
-    parser.add_argument(
-        "--shuffle",
-        type=bool,
-        required=False,
-        default=True,
-        help="dataloader shuffle",
-    )
-
-    # model
-    parser.add_argument(
-        "--embedding_dim",
-        type=int,
-        required=True,
-        help="embedding dimension",
-    )
-    parser.add_argument(
-        "--rnn_hidden_size",
-        type=int,
-        required=True,
-        help="LSTM hidden size",
-    )
-    parser.add_argument(
-        "--rnn_num_layers",
-        type=int,
-        required=False,
-        default=1,
-        help="number of LSTM layers",
-    )
-    parser.add_argument(
-        "--rnn_dropout",
-        type=float,
-        required=False,
-        default=0.0,
-        help="LSTM dropout",
-    )
-
-    # train
-    parser.add_argument(
-        "--train_eval_freq",
-        type=int,
-        required=False,
-        default=50,
-        help="evaluation frequency (number of batches)",
-    )
-    parser.add_argument(
-        "--clip_grad_norm",
-        type=float,
-        required=False,
-        default=1.0,
-        help="max_norm parameter in clip_grad_norm",
-    )
-
-    # additional
-    parser.add_argument(
-        "--seed",
-        type=int,
-        required=False,
-        default=42,
-        help="random seed",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        required=False,
-        default="cuda",
-        choices=["cpu", "cuda"],
-        help="torch device (available: 'cpu', 'cuda')",
-    )
-    parser.add_argument(
-        "--verbose",
-        type=bool,
-        required=False,
-        default=True,
-        help="verbose",
-    )
-
-    args = parser.parse_args()
-    return args
-
-
-def get_validate_args() -> Namespace:
-    """
-    Validation Argument Parser.
-
-    :return: parsed arguments
-    :rtype: Namespace
-    """
-
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--path_to_data",
-        type=str,
-        required=True,
-        help="path to validation data",
-    )
-    parser.add_argument(
-        "--path_to_model_folder",
-        type=str,
-        required=True,
-        help="path to language model folder",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        required=False,
-        default=42,
-        help="random seed",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        required=False,
-        default="cuda",
-        choices=["cpu", "cuda"],
-        help="torch device (available: 'cpu', 'cuda')",
-    )
-    parser.add_argument(
-        "--verbose",
-        type=bool,
-        required=False,
-        default=True,
-        help="verbose",
-    )
-    args = parser.parse_args()
-    return args
-
-
-def get_inference_args() -> Namespace:
-    """
-    Inference Argument Parser.
-
-    :return: parsed arguments
-    :rtype: Namespace
-    """
-
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--path_to_model_folder",
-        type=str,
-        required=True,
-        help="path to language model folder",
-    )
-    parser.add_argument(
-        "--prefix",
-        type=str,
-        required=False,
-        default="",
-        help="prefix before sequence generation",
-    )
-    parser.add_argument(
-        "--temperature",
-        type=float,
-        required=False,
-        default=0.0,
-        help="sampling temperature, if temperature == 0, always takes most likely token - greedy decoding",
-    )
-    parser.add_argument(
-        "--max_length",
-        type=int,
-        required=False,
-        default=100,
-        help="max number of generated tokens (chars)",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        required=False,
-        default=42,
-        help="random seed",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        required=False,
-        default="cuda",
-        choices=["cpu", "cuda"],
-        help="torch device (available: 'cpu', 'cuda')",
-    )
-    args = parser.parse_args()
-    return args
 
 
 def load_data(path: str, verbose: bool = True) -> List[str]:
@@ -264,15 +45,11 @@ def load_data(path: str, verbose: bool = True) -> List[str]:
 
 def get_char2idx(
     data: List[str],
-    BOS: str = "<BOS>",
-    EOS: str = "<EOS>",
     verbose: bool = True,
 ) -> Dict[str, int]:
     """
     Get char to idx mapping for PyTorch models.
     :param List[str] data: data
-    :param str BOS: begin-of-sentence token (default: "<BOS>")
-    :param str EOS: end-of-sentence token (default: "<EOS>")
     :param bool verbose: verbose (default: True)
     :return: char to idx mapping
     :rtype: Dict[str, int]
@@ -280,15 +57,18 @@ def get_char2idx(
 
     char2idx: Dict[str, int] = {}
 
+    # BOS, EOS
     char2idx[BOS] = len(char2idx)
     char2idx[EOS] = len(char2idx)
 
     if verbose:
         data = tqdm(data, desc="prepare char2idx")
+
     for sentence in data:
         for char in sentence:
             if char not in char2idx:
                 char2idx[char] = len(char2idx)
+
     return char2idx
 
 
@@ -302,8 +82,6 @@ class LMDataset(Dataset):
         data: List[str],
         char2idx: Dict[str, int],
         max_len: Optional[int] = None,
-        BOS: str = "<BOS>",
-        EOS: str = "<EOS>",
         verbose: bool = True,
     ):
         """
@@ -312,15 +90,15 @@ class LMDataset(Dataset):
         :param List[str] data: data
         :param Dict[str, int] char2idx: char to idx mapping
         :param Optional[int] max_len: max sentence length (chars)
-        :param str BOS: begin-of-sentence token (default: "<BOS>")
-        :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
         """
 
         self.char2idx = char2idx
         self.data = []
+
         if verbose:
             data = tqdm(data, desc="prepare dataset")
+
         for sentence in data:
             sentence_idx = [char2idx[char] for char in sentence]
             if max_len is not None:
@@ -383,6 +161,7 @@ def infer_lengths(
         torch.logical_and(sentences != bos_id, sentences != eos_id),
         dim=-1,
     )
+
     return lengths
 
 
@@ -397,8 +176,32 @@ def masking(lengths: torch.Tensor) -> torch.Tensor:
     """
 
     device = lengths.device
+
     lengths_shape = lengths.shape[0]
     max_len = lengths.max()
+
     return torch.arange(end=max_len, device=device).expand(
         size=(lengths_shape, max_len)
     ) < lengths.unsqueeze(1)
+
+
+def str2tensor(
+    string: str,
+    char2idx: Dict[str, int],
+) -> torch.Tensor:
+    """
+    Transform string to idx tensor using char2idx (incl. BOS).
+
+    :param str string: string to transform
+    :param Dict[str, int] char2idx: char to idx mapping
+    :return: idx tensor
+    :rtype: torch.Tensor
+    """
+
+    string_idx = [char2idx[BOS]] + [char2idx[char] for char in string]
+    string_idx_tensor = torch.tensor(
+        string_idx,
+        dtype=torch.long,
+    ).unsqueeze(0)
+
+    return string_idx_tensor
