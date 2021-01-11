@@ -76,6 +76,10 @@ if __name__ == "__main__":
     # load data
     data = load_data(path=args.path_to_data, verbose=args.verbose)
 
+    # max_lenght
+    if args.max_length is not None:
+        data = [sentence[: args.max_length] for sentence in data]
+
     # load
 
     # # vocab char2idx

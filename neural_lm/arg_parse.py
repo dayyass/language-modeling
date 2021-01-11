@@ -28,7 +28,7 @@ def get_train_args() -> Namespace:
 
     # dataset and dataloader
     parser.add_argument(
-        "--max_len",
+        "--max_length",
         type=int,
         required=False,
         default=None,
@@ -147,6 +147,13 @@ def get_validate_args() -> Namespace:
         type=str,
         required=True,
         help="path to language model folder",
+    )
+    parser.add_argument(
+        "--max_length",
+        type=int,
+        required=False,
+        default=None,
+        help="max sentence length (chars)",
     )
     parser.add_argument(
         "--seed",

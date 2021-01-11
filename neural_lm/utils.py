@@ -81,7 +81,7 @@ class LMDataset(Dataset):
         self,
         data: List[str],
         char2idx: Dict[str, int],
-        max_len: Optional[int] = None,
+        max_length: Optional[int] = None,
         verbose: bool = True,
     ):
         """
@@ -89,7 +89,7 @@ class LMDataset(Dataset):
 
         :param List[str] data: data
         :param Dict[str, int] char2idx: char to idx mapping
-        :param Optional[int] max_len: max sentence length (chars)
+        :param Optional[int] max_length: max sentence length (chars)
         :param bool verbose: verbose (default: True)
         """
 
@@ -101,8 +101,8 @@ class LMDataset(Dataset):
 
         for sentence in data:
             sentence_idx = [char2idx[char] for char in sentence]
-            if max_len is not None:
-                sentence_idx = sentence_idx[:max_len]
+            if max_length is not None:
+                sentence_idx = sentence_idx[:max_length]
             self.data.append(
                 [char2idx[BOS]] + sentence_idx + [char2idx[EOS]],
             )
@@ -178,10 +178,10 @@ def masking(lengths: torch.Tensor) -> torch.Tensor:
     device = lengths.device
 
     lengths_shape = lengths.shape[0]
-    max_len = lengths.max()
+    max_length = lengths.max()
 
-    return torch.arange(end=max_len, device=device).expand(
-        size=(lengths_shape, max_len)
+    return torch.arange(end=max_length, device=device).expand(
+        size=(lengths_shape, max_length)
     ) < lengths.unsqueeze(1)
 
 

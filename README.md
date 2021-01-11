@@ -64,7 +64,7 @@ artificial neural network ( cnn ) architectures on h2o platform for real - world
 #### Training
 Script for training RNN language models:
 ```
-python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 5 --max_len 512 --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
+python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 5 --max_length 512 --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
 ```
 Required arguments:
 - **--path_to_data** - path to train data
@@ -75,7 +75,7 @@ Required arguments:
 
 Optional arguments:
 - **--path_to_save_folder** - path to save folder (default: *"models/rnn_language_model"*)
-- **--max_len** - max sentence length (chars) (default: *None*)
+- **--max_length** - max sentence length (chars) (default: *None*)
 - **--shuffle** - dataloader shuffle (default: *True*)
 - **--rnn_num_layers** - number of LSTM layers (default: *1*)
 - **--rnn_dropout** - LSTM dropout (default: *0.0*)
@@ -88,13 +88,14 @@ Optional arguments:
 #### Validation
 Script for validation RNN language models using perplexity:
 ```
-python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model"
+python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --max_length 512
 ```
 Required arguments:
 - **--path_to_data** - path to validation data
 - **--path_to_model** - path to language model
 
 Optional arguments:
+- **--max_length** - max sentence length (chars) (default: *None*)
 - **--seed** - random seed (default: *42*)
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 - **--verbose** - verbose (default: *True*)

@@ -203,7 +203,7 @@ if __name__ == "__main__":
     train_dataset = LMDataset(
         data,
         char2idx,
-        max_len=args.max_len,
+        max_length=args.max_length,
         verbose=args.verbose,
     )
     train_collator = LMCollator(
