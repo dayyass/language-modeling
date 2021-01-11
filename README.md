@@ -44,7 +44,7 @@ Optional arguments:
 #### Inference
 Script for generation new sequences using statistical language models:
 ```
-python statistical_lm/inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.5 --max_length 100
+python statistical_lm/inference.py --path_to_model "models/3_gram_language_model.pkl" --prefix "artificial" --temperature 0.5
 ```
 Required arguments:
 - **--path_to_model** - path to language model
@@ -57,14 +57,14 @@ Optional arguments:
 
 Command output with 3-gram language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
 ```
-artificial intelligence ( ai ) is a challenging task . <EOS>
+artificial neural network ( cnn ) architectures on h2o platform for real - world applications . <EOS>
 ```
 
 ### Neural Language Modeling
 #### Training
 Script for training RNN language models:
 ```
-python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 10 --max_len 512 --batch_size 128 --embedding_dim 32 --rnn_hidden_size 256
+python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 5 --max_len 512 --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
 ```
 Required arguments:
 - **--path_to_data** - path to train data
@@ -88,7 +88,7 @@ Optional arguments:
 #### Validation
 Script for validation RNN language models using perplexity:
 ```
-python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --verbose True
+python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model"
 ```
 Required arguments:
 - **--path_to_data** - path to validation data
@@ -102,7 +102,7 @@ Optional arguments:
 #### Inference
 Script for generation new sequences using RNN language models:
 ```
-python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5 --max_length 512
+python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5
 ```
 Required arguments:
 - **--path_to_model_folder** - path to language model folder
@@ -116,11 +116,7 @@ Optional arguments:
 
 Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
 ```
-artificial content of inference in the adaptive detection of the constraint and previous approach to implementation of
-a special interaction to computer output ( sequeries description of the specifically used in the search and problem of
-multi - stationary bound to computational models ; we propose a new manifold - to - active and the distributions of
-the regions and the computational convolutional neural networks . this paper presents a new approximation of
-deep neural networks ; this paper developed and th
+artificial visual information of the number , using an intervidence for detection for order to the recognition
 ```
 
 ### Data Format

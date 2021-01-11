@@ -197,7 +197,7 @@ if __name__ == "__main__":
     data = load_data(path=args.path_to_data, verbose=args.verbose)
 
     # char2idx
-    char2idx = get_char2idx(data, BOS=BOS, EOS=EOS, verbose=args.verbose)
+    char2idx = get_char2idx(data, verbose=args.verbose)
 
     # dataset, collator, dataloader
     train_dataset = LMDataset(
