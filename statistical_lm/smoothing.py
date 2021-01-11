@@ -15,6 +15,7 @@ def no_smoothing(
     :return: mapping from (n - 1) previous words to probability of each word occurred after
     :rtype: DefaultDict[Tuple[str, ...], Dict[str, float]]
     """
+
     probs: DefaultDict[Tuple[str, ...], Dict[str, float]] = defaultdict(dict)
     for prefix in tqdm(counts.keys(), desc="transform counts to probabilities"):
         denominator = sum(counts[prefix].values())
@@ -37,6 +38,7 @@ def add_k_smoothing(
         mapping from (n - 1) previous words to probability of each word occurred after
     :rtype: Tuple[Set[str], DefaultDict[Tuple[str, ...], Dict[str, float]]]
     """
+
     probs: DefaultDict[Tuple[str, ...], Dict[str, float]] = defaultdict(dict)
     vocab = set(word for word_counts in counts.values() for word in word_counts)
     for prefix in tqdm(counts.keys(), desc="transform counts to probabilities"):

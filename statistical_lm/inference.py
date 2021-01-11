@@ -23,16 +23,18 @@ def get_next_token(
     :return: next token
     :rtype: str
     """
+
     token2prob = language_model.get_possible_next_tokens(prefix)
-    tokens = list(token2prob.keys())
-    probs = list(token2prob.values())
+    tokens, probs = zip(*token2prob.items())
 
     if temperature == 0.0:
         next_token = tokens[probs.index(max(probs))]
     else:
-        denominator = sum(prob ** (1 / temperature) for prob in probs)
-        probs = [prob ** (1 / temperature) / denominator for prob in probs]
-        next_token = np.random.choice(tokens, p=probs)
+        probs_with_temperature = np.array(
+            [prob ** (1.0 / temperature) for prob in probs]
+        )
+        probs_with_temperature /= sum(probs_with_temperature)
+        next_token = np.random.choice(tokens, p=probs_with_temperature)
 
     return next_token
 
@@ -56,6 +58,7 @@ def generate(
     :return: generated sequence
     :rtype: str
     """
+
     for _ in range(max_length):
         next_token = get_next_token(language_model, prefix, temperature=temperature)
         prefix += f" {next_token}"

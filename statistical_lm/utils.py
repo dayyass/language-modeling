@@ -13,6 +13,7 @@ def load_data(path: str, verbose: bool = True) -> List[List[str]]:
     :return: data
     :rtype: List[List[str]]
     """
+
     data = []
     with open(path, mode="r") as fp:
         if verbose:
@@ -29,6 +30,7 @@ def get_train_args() -> Namespace:
     :return: parsed arguments
     :rtype: Namespace
     """
+
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_data",
@@ -82,6 +84,7 @@ def get_validate_args() -> Namespace:
     :return: parsed arguments
     :rtype: Namespace
     """
+
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_data",
@@ -113,6 +116,7 @@ def get_inference_args() -> Namespace:
     :return: parsed arguments
     :rtype: Namespace
     """
+
     parser = ArgumentParser()
     parser.add_argument(
         "--path_to_model",

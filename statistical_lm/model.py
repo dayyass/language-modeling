@@ -25,6 +25,7 @@ def count_ngrams(
     :return: mapping from (n - 1) previous words to number of times each word occurred after
     :rtype: DefaultDict[Tuple[str], CounterType[str]]
     """
+
     counts: DefaultDict[Tuple[str], CounterType[str]] = defaultdict(Counter)
     if verbose:
         data = tqdm(data, desc="count n-grams")
@@ -59,6 +60,7 @@ class NGramLanguageModel:
         :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
         """
+
         self.n = n
         self.BOS = BOS
         self.EOS = EOS
@@ -81,6 +83,7 @@ class NGramLanguageModel:
         :return: words distribution after particular (n - 1) previous words prefix
         :rtype: Dict[str, float]
         """
+
         # pad sentence beginning with BOS
         prefix_list = (self.n - 1) * [self.BOS] + prefix.split()
         # fmt: off
@@ -97,6 +100,7 @@ class NGramLanguageModel:
         :return: probability of particular word occurred after particular (n - 1) previous words
         :rtype: float
         """
+
         return self.get_possible_next_tokens(prefix).get(next_token, 0)
 
 
@@ -125,6 +129,7 @@ class LaplaceLanguageModel(NGramLanguageModel):
         :param str EOS: end-of-sentence token (default: "<EOS>")
         :param bool verbose: verbose (default: True)
         """
+
         self.n = n
         self.delta = delta
         self.BOS = BOS
@@ -149,6 +154,7 @@ class LaplaceLanguageModel(NGramLanguageModel):
         :return: words distribution after particular (n - 1) previous words prefix
         :rtype: Dict[str, float]
         """
+
         probs = super().get_possible_next_tokens(prefix)
         missing_prob_total = 1.0 - sum(probs.values())
         missing_prob_total = max(0.0, missing_prob_total)  # prevent rounding errors
@@ -165,6 +171,7 @@ class LaplaceLanguageModel(NGramLanguageModel):
         :return: probability of particular word occurred after particular (n - 1) previous words
         :rtype: float
         """
+
         probs = super().get_possible_next_tokens(prefix)
         if next_token in probs:
             return probs[next_token]

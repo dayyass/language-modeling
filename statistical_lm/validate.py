@@ -30,6 +30,7 @@ def compute_perplexity(
     :return: perplexity
     :rtype: float
     """
+
     log_likelihood, N = 0, 0
     for sentence in tqdm(data, desc="compute perplexity"):
         N += len(sentence) + 1
