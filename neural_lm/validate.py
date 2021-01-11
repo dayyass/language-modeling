@@ -5,9 +5,11 @@ from typing import Dict, List
 import numpy as np
 import torch
 from inference import get_next_token_prob
-from model import RNNLanguageModel
 from tqdm import tqdm
-from utils import get_validate_args, load_data, set_global_seed
+
+from arg_parse import get_validate_args  # isort:skip
+from model import RNNLanguageModel  # isort:skip
+from utils import set_global_seed, load_data  # isort:skip
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded
@@ -18,7 +20,6 @@ def compute_perplexity(
     char2idx: Dict[str, int],
     data: List[str],
     min_logprob: float = np.log(10 ** -50.0),
-    EOS: str = "<EOS>",
 ) -> float:
     """
     Compute perplexity using RNN language model and validation data.
@@ -28,30 +29,38 @@ def compute_perplexity(
     :param List[str] data: validation data
     :param float min_logprob: if logprob is smaller than min_logprob,
         set it equal to min_logrob (default: np.log(10 ** -50.0))
-    :param str EOS: end-of-sentence token (default: "<EOS>")
     :return: perplexity
     :rtype: float
     """
 
+    model.eval()
+
     log_likelihood, N = 0, 0
+
     for sentence in tqdm(data, desc="compute perplexity"):
         N += len(sentence) + 1
+
         for i in range(len(sentence) + 1):  # for EOS
+
             if i != len(sentence):
                 prefix = sentence[:i]
                 next_token = sentence[i]
             else:
                 prefix = sentence
                 next_token = EOS
+
             prob = get_next_token_prob(
                 model=language_model,
                 char2idx=char2idx,
                 prefix=prefix,
                 next_token=next_token,
             )
+
             log_prob = max(min_logprob, np.log(prob) if prob != 0.0 else min_logprob)
             log_likelihood += log_prob
+
     perplexity = np.exp(-1 / N * log_likelihood)
+
     return perplexity
 
 
@@ -93,7 +102,6 @@ if __name__ == "__main__":
         language_model=model,
         char2idx=char2idx,
         data=data,
-        EOS=EOS,
     )
 
     # print perplexity
