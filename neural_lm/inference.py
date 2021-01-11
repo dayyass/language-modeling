@@ -4,52 +4,31 @@ from typing import Dict
 
 import numpy as np
 import torch
-import torch.nn as nn
-from model import RNNLanguageModel
-from utils import get_inference_args, set_global_seed
+
+from arg_parse import get_inference_args  # isort:skip
+from model import RNNLanguageModel  # isort:skip
+from utils import set_global_seed, str2tensor  # isort:skip
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded
 
 
-def str2tensor(
-    string: str,
-    char2idx: Dict[str, int],
-    BOS: str = "<BOS>",
-) -> torch.Tensor:
-    """
-    Transform string to idx tensor using char2idx.
-
-    :param str string: string to transform
-    :param Dict[str, int] char2idx: char to idx mapping
-    :param str BOS: begin-of-sentence token (default: "<BOS>")
-    :return: idx tensor
-    :rtype: torch.Tensor
-    """
-
-    string_idx = [char2idx[BOS]] + [char2idx[char] for char in string]
-    string_idx_tensor = torch.tensor(
-        string_idx,
-        dtype=torch.long,
-    ).unsqueeze(0)
-
-    return string_idx_tensor
-
-
 def get_possible_next_tokens(
-    model: nn.Module,
+    model: RNNLanguageModel,
     char2idx: Dict[str, int],
     prefix: str,
 ) -> Dict[str, float]:
     """
     Get tokens distribution after all previous tokens prefix.
 
-    :param nn.Module model: RNN Language Model
+    :param RNNLanguageModel model: RNN Language Model
     :param Dict[str, int] char2idx: char to idx mapping
     :param str prefix: all previous tokens prefix
     :return: char to probability mapping
     :rtype: Dict[str, float]
     """
+
+    model.eval()
 
     device = next(model.parameters()).device
 
@@ -69,7 +48,7 @@ def get_possible_next_tokens(
 
 
 def get_next_token_prob(
-    model: nn.Module,
+    model: RNNLanguageModel,
     char2idx: Dict[str, int],
     prefix: str,
     next_token: str,
@@ -77,13 +56,15 @@ def get_next_token_prob(
     """
     Get probability of particular token occurred after all previous tokens.
 
-    :param nn.Module model: RNN Language Model
+    :param RNNLanguageModel model: RNN Language Model
     :param Dict[str, int] char2idx: char to idx mapping
     :param str prefix: all previous tokens prefix
     :param str next_token: particular token
     :return: probability of particular token occurred after all previous tokens
     :rtype: float
     """
+
+    model.eval()
 
     char2prob = get_possible_next_tokens(
         model=model,
@@ -96,14 +77,47 @@ def get_next_token_prob(
     return next_token_prob
 
 
+def get_next_token(
+    model: RNNLanguageModel,
+    char2idx: Dict[str, int],
+    prefix: str,
+    temperature: float = 0.0,
+) -> str:
+    """
+    Sample word using language model, prefix and temperature.
+
+    :param RNNLanguageModel model: language model
+    :param Dict[str, int] char2idx: char to idx mapping
+    :param str prefix: prefix before sequence generation
+    :param float temperature: sampling temperature,
+        if temperature == 0.0, always takes most likely token - greedy decoding (default: 0.0)
+    :return: next token
+    :rtype: str
+    """
+
+    model.eval()
+
+    char2prob = get_possible_next_tokens(model=model, char2idx=char2idx, prefix=prefix)
+    chars, probs = zip(*char2prob.items())
+
+    if temperature == 0.0:
+        next_token = chars[np.argmax(probs)]
+    else:
+        probs_with_temperature = np.array(
+            [prob ** (1.0 / temperature) for prob in probs]
+        )
+        probs_with_temperature /= sum(probs_with_temperature)
+        next_token = np.random.choice(chars, p=probs_with_temperature)
+
+    return next_token
+
+
 def generate(
-    model: nn.Module,
+    model: RNNLanguageModel,
     char2idx: Dict[str, int],
     prefix: str,
     temperature: float = 0.0,
     max_length: int = 100,
-    BOS: str = "<BOS>",
-    EOS: str = "<EOS>",
 ) -> str:
     """
     Generate sentence using language model.
@@ -114,31 +128,23 @@ def generate(
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding (default: 0.0)
     :param int max_length: max number of generated tokens (chars) (default: 100)
-    :param str BOS: begin-of-sentence token (default: "<BOS>")
-    :param str EOS: end-of-sentence token (default: "<EOS>")
     :return: generated sequence
     :rtype: str
     """
 
+    model.eval()
+
     for _ in range(max_length):
-        char2prob = get_possible_next_tokens(
-            model=model, char2idx=char2idx, prefix=prefix
+        next_token = get_next_token(
+            model=model,
+            char2idx=char2idx,
+            prefix=prefix,
+            temperature=temperature,
         )
-        chars, probs = zip(*char2prob.items())
-
-        if temperature == 0.0:
-            next_token = chars[np.argmax(probs)]
-        else:
-            probs_with_temperature = np.array(
-                [prob ** (1.0 / temperature) for prob in probs]
-            )
-            probs_with_temperature /= sum(probs_with_temperature)
-            next_token = np.random.choice(chars, p=probs_with_temperature)
-
         prefix += next_token
 
         # BOS to prevent errors
-        if (next_token == BOS) or (next_token == EOS) or len(prefix) > max_length:
+        if (next_token == BOS) or (next_token == EOS):
             break
 
     return prefix
