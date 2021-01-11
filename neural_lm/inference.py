@@ -1,8 +1,15 @@
+import json
+import os
 from typing import Dict
 
 import numpy as np
 import torch
 import torch.nn as nn
+from model import RNNLanguageModel
+from utils import get_inference_args, set_global_seed
+
+BOS = "<BOS>"  # hardcoded
+EOS = "<EOS>"  # hardcoded
 
 
 def str2tensor(
@@ -63,7 +70,7 @@ def generate(
     char2idx: Dict[str, int],
     prefix: str,
     temperature: float = 0.0,
-    max_len: int = 100,
+    max_length: int = 100,
     BOS: str = "<BOS>",
     EOS: str = "<EOS>",
 ) -> str:
@@ -75,14 +82,14 @@ def generate(
     :param str prefix: all previous tokens prefix
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding (default: 0.0)
-    :param int max_len: max number of generated tokens (chars) (default: 100)
+    :param int max_length: max number of generated tokens (chars) (default: 100)
     :param str BOS: begin-of-sentence token (default: "<BOS>")
     :param str EOS: end-of-sentence token (default: "<EOS>")
     :return: generated sequence
     :rtype: str
     """
 
-    for _ in range(max_len):
+    for _ in range(max_length):
         char2prob = get_possible_next_tokens(
             model=model, char2idx=char2idx, prefix=prefix
         )
@@ -100,7 +107,50 @@ def generate(
         prefix += next_token
 
         # BOS to prevent errors
-        if (next_token == BOS) or (next_token == EOS) or len(prefix) > max_len:
+        if (next_token == BOS) or (next_token == EOS) or len(prefix) > max_length:
             break
 
     return prefix
+
+
+if __name__ == "__main__":
+
+    # argparse
+    args = get_inference_args()
+
+    # set seed and device
+    set_global_seed(args.seed)
+    device = torch.device(args.device)
+
+    # load
+
+    # # vocab char2idx
+    path = os.path.join(args.path_to_model_folder, "vocab.json")
+    with open(path, mode="r") as fp:
+        char2idx = json.load(fp)
+
+    # # model parameters
+    path = os.path.join(args.path_to_model_folder, "model_parameters.json")
+    with open(path, mode="r") as fp:
+        model_parameters = json.load(fp)
+
+    # # model state_dict
+    path = os.path.join(args.path_to_model_folder, "language_model.pth")
+    state_dict = torch.load(path, map_location=device)
+
+    # init model
+    model = RNNLanguageModel(**model_parameters)
+    model.load_state_dict(state_dict)
+    model.eval()
+
+    # sequence generation
+    generated_sequence = generate(
+        model=model,
+        char2idx=char2idx,
+        prefix=args.prefix,
+        temperature=args.temperature,
+        max_length=args.max_length,
+    )
+
+    # print generated sequence
+    print(generated_sequence)

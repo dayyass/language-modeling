@@ -141,6 +141,61 @@ def get_train_args() -> Namespace:
     return args
 
 
+def get_inference_args() -> Namespace:
+    """
+    Inference Argument Parser.
+
+    :return: parsed arguments
+    :rtype: Namespace
+    """
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--path_to_model_folder",
+        type=str,
+        required=True,
+        help="path to language model folder",
+    )
+    parser.add_argument(
+        "--prefix",
+        type=str,
+        required=False,
+        default="",
+        help="prefix before sequence generation",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        required=False,
+        default=0.0,
+        help="sampling temperature, if temperature == 0, always takes most likely token - greedy decoding",
+    )
+    parser.add_argument(
+        "--max_length",
+        type=int,
+        required=False,
+        default=100,
+        help="max number of generated tokens (chars)",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        required=False,
+        default=42,
+        help="random seed",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        required=False,
+        default="cuda",
+        choices=["cpu", "cuda"],
+        help="torch device (available: 'cpu', 'cuda')",
+    )
+    args = parser.parse_args()
+    return args
+
+
 def load_data(path: str, verbose: bool = True) -> List[str]:
     """
     Load data.

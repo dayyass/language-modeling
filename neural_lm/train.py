@@ -222,16 +222,17 @@ if __name__ == "__main__":
     # save
     os.makedirs(args.path_to_save_folder, exist_ok=True)
 
-    # # model state_dict
-    path = os.path.join(args.path_to_save_folder, "language_model.pth")
-    torch.save(model.eval().cpu().state_dict(), path)
+    # # vocab char2idx
+    path = os.path.join(args.path_to_save_folder, "vocab.json")
+    with open(path, mode="w") as fp:
+        json.dump(char2idx, fp)
 
     # # model parameters
     path = os.path.join(args.path_to_save_folder, "model_parameters.json")
     with open(path, mode="w") as fp:
         json.dump(model_parameters, fp)
 
-    # # vocab char2idx
-    path = os.path.join(args.path_to_save_folder, "vocab.json")
-    with open(path, mode="w") as fp:
-        json.dump(char2idx, fp)
+    # # model state_dict
+    state_dict = model.eval().cpu().state_dict()
+    path = os.path.join(args.path_to_save_folder, "language_model.pth")
+    torch.save(state_dict, path)

@@ -83,13 +83,34 @@ Optional arguments:
 - **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
 - **--verbose** - verbose (default: *True*)
 
+#### Inference
+Script for generation new sequences using neural language models:
+```
+python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.0 --max_length 100
+```
+Required arguments:
+- **--path_to_model_folder** - path to language model folder
+
+Optional arguments:
+- **--prefix** - prefix before sequence generation (default: *""*)
+- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (default: *0.0*)
+- **--max_length** - max number of generated tokens (chars) (default: *100*)
+- **--seed** - random seed (default: *42*)
+- **--device** - torch device (available: "cpu", "cuda") (default: *"cuda"*)
+
+# TODO: fix
+Command output with RNN language model trained on [*arxiv.txt*](data/README.md) with prefix "*artificial*" and greedy decoding (temperature == 0.0):
+```
+artificial intelligence ( ai ) is a challenging task . <EOS>
+```
+
 ### Data Format
 More about it [here](data/README.md).
 
 ### Models
 List of implemented models:
 - [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
-- [x] RNN Language Model (char-based)
+- [x] RNN Language Model (char-based)  # TODO
 - [ ] GPT Language Model
 
 ### Smoothing (only for N-gram Language Models)
