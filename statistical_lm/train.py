@@ -1,11 +1,13 @@
 import os
 import pickle
 
+from arg_parse import get_train_args
 from model import LaplaceLanguageModel, NGramLanguageModel
-from utils import get_train_args, load_data
+from utils import load_data
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded
+
 
 if __name__ == "__main__":
 
@@ -22,15 +24,15 @@ if __name__ == "__main__":
     # train
     if args.smoothing is None:
         language_model = NGramLanguageModel(
-            data=data, n=args.n, BOS=BOS, EOS=EOS, verbose=args.verbose
+            data=data,
+            n=args.n,
+            verbose=args.verbose,
         )
     elif args.smoothing == "add-k":
         language_model = LaplaceLanguageModel(
             data=data,
             n=args.n,
             delta=args.delta,
-            BOS=BOS,
-            EOS=EOS,
             verbose=args.verbose,
         )
     else:

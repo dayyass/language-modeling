@@ -9,13 +9,14 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from inference import generate
 
+from arg_parse import get_train_args  # isort:skip
 from model import RNNLanguageModel  # isort:skip
 from utils import (  # isort:skip
     LMCollator,
     LMDataset,
     get_char2idx,
-    get_train_args,
     infer_lengths,
     load_data,
     masking,
@@ -53,9 +54,11 @@ def train_epoch(
 
     metrics: DefaultDict[str, List[float]] = defaultdict(list)
 
+    char2idx = dataloader.dataset.char2idx
+
     # BOS and EOS
-    bos_id = dataloader.dataset.char2idx[BOS]
-    eos_id = dataloader.dataset.char2idx[EOS]
+    bos_id = char2idx[BOS]
+    eos_id = char2idx[EOS]
 
     if verbose:
         dataloader = tqdm(dataloader, desc="iter dataloader")
@@ -100,9 +103,18 @@ def train_epoch(
 
         if verbose:
             if i % train_eval_freq == 0:
+                generated_sequence = generate(
+                    model=model,
+                    char2idx=char2idx,
+                    prefix="",
+                    temperature=0.5,  # hardcoded
+                    max_length=100,  # hardcoded
+                )
+                model.train()  # eval to train
+
                 for metric_name, metric_list in metrics.items():
                     print(f"{metric_name}: {np.mean(metric_list[-train_eval_freq:])}")
-                print()
+                print(f"inference: {generated_sequence}\n")
 
     return metrics
 
@@ -132,9 +144,13 @@ def train(
     :param bool verbose: verbose (default: True)
     """
 
+    char2idx = dataloader.dataset.char2idx
+
     epochs_range = range(n_epoch)
     if verbose:
         epochs_range = tqdm(epochs_range, desc="iter epochs")
+
+    model.train()
 
     for _ in epochs_range:
 
@@ -150,9 +166,18 @@ def train(
         )
 
         if verbose:
+            generated_sequence = generate(
+                model=model,
+                char2idx=char2idx,
+                prefix="",
+                temperature=0.5,  # hardcoded
+                max_length=100,  # hardcoded
+            )
+            model.train()  # eval to train
+
             for metric_name, metric_list in metrics.items():
                 print(f"train {metric_name}: {np.mean(metric_list)}")
-            print()
+            print(f"inference: {generated_sequence}\n")
 
 
 if __name__ == "__main__":
@@ -179,8 +204,6 @@ if __name__ == "__main__":
         data,
         char2idx,
         max_len=args.max_len,
-        BOS=BOS,
-        EOS=EOS,
         verbose=args.verbose,
     )
     train_collator = LMCollator(
@@ -208,7 +231,8 @@ if __name__ == "__main__":
     optimizer = optim.Adam(model.parameters())
 
     # train
-    train_epoch(
+    train(
+        n_epoch=args.n_epoch,
         model=model,
         dataloader=train_loader,
         criterion=criterion,
