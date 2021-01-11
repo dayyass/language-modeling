@@ -1,9 +1,9 @@
 import os
 import pickle
 
-from arg_parse import get_train_args
-from model import LaplaceLanguageModel, NGramLanguageModel
-from utils import load_data
+from arg_parse import get_train_args  # isort:skip
+from model import NGramLanguageModel, LaplaceLanguageModel  # isort:skip
+from utils import load_data  # isort:skip
 
 BOS = "<BOS>"  # hardcoded
 EOS = "<EOS>"  # hardcoded

@@ -9,18 +9,18 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from inference import generate
 
 from arg_parse import get_train_args  # isort:skip
+from inference import generate  # isort:skip
 from model import RNNLanguageModel  # isort:skip
 from utils import (  # isort:skip
-    LMCollator,
-    LMDataset,
-    get_char2idx,
-    infer_lengths,
     load_data,
-    masking,
     set_global_seed,
+    get_char2idx,
+    LMDataset,
+    LMCollator,
+    infer_lengths,
+    masking,
 )
 
 BOS = "<BOS>"  # hardcoded
