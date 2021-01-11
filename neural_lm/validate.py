@@ -4,10 +4,10 @@ from typing import Dict, List
 
 import numpy as np
 import torch
-from inference import get_next_token_prob
 from tqdm import tqdm
 
 from arg_parse import get_validate_args  # isort:skip
+from inference import get_next_token_prob  # isort:skip
 from model import RNNLanguageModel  # isort:skip
 from utils import set_global_seed, load_data  # isort:skip
 
