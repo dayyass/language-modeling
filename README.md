@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ```
 
 ### Data Format
-Prepared text file with space separated words on each line.
+Prepared text file with space separated words on each line.<br/>
 More about it [here](data/README.md).
 
 ### Statistical Language Modeling
