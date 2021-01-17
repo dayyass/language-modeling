@@ -13,6 +13,10 @@ cd language_modeling
 pip install -r requirements.txt
 ```
 
+### Data Format
+Prepared text file with space separated words on each line.
+More about it [here](data/README.md).
+
 ### Statistical Language Modeling
 #### Training
 Script for training statistical language models:
@@ -119,9 +123,6 @@ Command output with RNN language model trained on [*arxiv.txt*](data/README.md) 
 ```
 artificial visual information of the number , using an intervidence for detection for order to the recognition
 ```
-
-### Data Format
-More about it [here](data/README.md).
 
 ### Models
 List of implemented models:
