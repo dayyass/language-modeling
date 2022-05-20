@@ -81,11 +81,14 @@ class NGramLanguageModel:
         :rtype: Dict[str, float]
         """
 
-        # pad sentence beginning with BOS
-        prefix_list = (self.n - 1) * [self.BOS] + prefix.split()
-        # fmt: off
-        prefix_tuple = tuple(prefix_list[-self.n + 1:])
-        # fmt: on
+        if self.n == 1:  # unigram model case
+            prefix_tuple = ()
+        else:
+            # pad sentence beginning with BOS
+            prefix_list = (self.n - 1) * [self.BOS] + prefix.split()
+            # fmt: off
+            prefix_tuple = tuple(prefix_list[-self.n + 1:])  # type: ignore
+            # fmt: on
 
         return self.probs[prefix_tuple]
 
