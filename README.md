@@ -64,11 +64,11 @@ Command output with 3-gram language model trained on [*arxiv.txt*](data/README.m
 artificial neural network ( cnn ) architectures on h2o platform for real - world applications . <EOS>
 ```
 
-### Neural Language Modeling
+### RNN Language Modeling
 #### Training
 Script for training RNN language models:
 ```
-python neural_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 5 --max_length 512 --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
+python rnn_lm/train.py --path_to_data "data/arxiv_train.txt" --path_to_save_folder "models/rnn_language_model" --n_epoch 5 --max_length 512 --batch_size 128 --embedding_dim 64 --rnn_hidden_size 256
 ```
 Required arguments:
 - **--path_to_data** - path to train data
@@ -92,7 +92,7 @@ Optional arguments:
 #### Validation
 Script for validation RNN language models using perplexity:
 ```
-python neural_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --max_length 512
+python rnn_lm/validate.py --path_to_data "data/arxiv_test.txt" --path_to_model_folder "models/rnn_language_model" --max_length 512
 ```
 Required arguments:
 - **--path_to_data** - path to validation data
@@ -107,7 +107,7 @@ Optional arguments:
 #### Inference
 Script for generation new sequences using RNN language models:
 ```
-python neural_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5
+python rnn_lm/inference.py --path_to_model_folder "models/rnn_language_model" --prefix "artificial" --temperature 0.5
 ```
 Required arguments:
 - **--path_to_model_folder** - path to language model folder
@@ -127,7 +127,7 @@ artificial visual information of the number , using an intervidence for detectio
 ### Models
 List of implemented models:
 - [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
-- [x] [RNN Language Model](https://github.com/dayyass/language_modeling/blob/407d02b79d6d7fd614dc7c5fd235ad269cddcb2d/neural_lm/model.py#L6) (char-based)
+- [x] [RNN Language Model](https://github.com/dayyass/language_modeling/blob/407d02b79d6d7fd614dc7c5fd235ad269cddcb2d/rnn_lm/model.py#L6) (char-based)
 - [ ] GPT Language Model
 
 ### Smoothing (only for N-gram Language Models)
@@ -136,3 +136,10 @@ List of implemented models:
 - [ ] interpolation smoothing
 - [ ] back-off / Katz smoothing
 - [ ] Kneser-Ney smoothing
+
+### Models Comparison
+| perplexity (train / test) | none             | add-k / Laplace    | interpolation | back-off / Katz | Kneser-Ney |
+| ------------------------- | ---------------- | -------------------| ------------- | --------------- | ---------- |
+| **1-gram**                | 881.27 / 1832.23 | 882.63 / 1838.22   | -             | -               | -          |
+| **2-gram**                | 95.32 / 8.57e+7  | 1106.79 / 1292.02  | -             | -               | -          |
+| **3-gram**                | 12.78 / 6.2e+22  | 7032.91 / 10499.24 | -             | -               | -          |
