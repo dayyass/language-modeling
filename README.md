@@ -29,7 +29,7 @@ Required arguments:
 
 Optional arguments:
 - **--smoothing** - smoothing method (available: None, "add-k") (default: *None*)
-- **--delta** - smoothing additive parameter (only for add-k smoothing) (default: 1.0)
+- **--delta** - smoothing additive parameter (only for add-k smoothing) (default: *1.0*)
 - **--path_to_save** - path to save model (default: *"models/language_model.pkl"*)
 - **--verbose** - verbose (default: *True*)
 
@@ -55,7 +55,9 @@ Required arguments:
 
 Optional arguments:
 - **--prefix** - prefix before sequence generation (default: *""*)
-- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (default: *0.0*)
+- **--sampling** - sampling strategy (available: "sampling", "top-k", "top-p" and "beam search") (default: *"sampling"*)
+- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (only for "sampling" sampling strategy) (default: *0.0*)
+- **--k** - top-k parameter (only for "top-k" sampling strategy) (default: *10*)
 - **--max_length** - max number of generated words (default: *100*)
 - **--seed** - random seed (default: *42*)
 
@@ -138,6 +140,9 @@ List of implemented models:
 - [ ] Kneser-Ney smoothing
 
 ### Models Comparison
+Generation comparison available [here](https://github.com/dayyass/language-modeling/wiki/Generation-Comparison).
+
+#### Statistical Language Modeling
 | perplexity (train / test) | none             | add-k / Laplace    | interpolation | back-off / Katz | Kneser-Ney |
 | ------------------------- | ---------------- | -------------------| ------------- | --------------- | ---------- |
 | **1-gram**                | 881.27 / 1832.23 | 882.63 / 1838.22   | -             | -               | -          |

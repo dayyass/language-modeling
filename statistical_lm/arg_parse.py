@@ -115,11 +115,26 @@ def get_inference_args() -> Namespace:
         help="prefix before sequence generation",
     )
     parser.add_argument(
+        "--strategy",
+        type=str,
+        required=False,
+        default="sampling",
+        choices=["sampling", "top-k", "top-p", "beam search"],
+        help="sampling strategy (available: 'sampling', 'top-k', 'top-p' and 'beam search')",
+    )
+    parser.add_argument(
         "--temperature",
         type=float,
         required=False,
         default=0.0,
         help="sampling temperature, if temperature == 0, always takes most likely token - greedy decoding",
+    )
+    parser.add_argument(
+        "--k",
+        type=int,
+        required=False,
+        default=10,
+        help="top-k parameter (only for 'top-k' sampling strategy)",
     )
     parser.add_argument(
         "--max_length",
