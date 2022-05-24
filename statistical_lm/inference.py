@@ -1,6 +1,7 @@
 import pickle
 
 import numpy as np
+from scipy.special import softmax
 
 from arg_parse import get_inference_args  # isort:skip
 from model import NGramLanguageModel  # isort:skip
@@ -23,11 +24,12 @@ def get_next_token(
     :param NGramLanguageModel language_model: language model
     :param str prefix: prefix before sequence generation
     :param str strategy: sampling strategy
-        (available: 'sampling', 'top-k', 'top-p' and 'beam search') (default: 'sampling')
+        (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')
+        (default: 'sampling')
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding
         (only for 'sampling' sampling strategy) (default: 0.0)
-    :param int k: top-k parameter (only for 'top-k' sampling strategy) (default: 10)
+    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' sampling strategy) (default: 10)
     :return: next token
     :rtype: str
     """
@@ -46,11 +48,27 @@ def get_next_token(
             probs_with_temperature /= sum(probs_with_temperature)
             next_token = np.random.choice(tokens, p=probs_with_temperature)
 
-    elif strategy == "top-k":
+    elif strategy == "top-k-uniform":
+
         topk_idx = np.argsort(probs)[-k:]
         topk_tokens = np.array(tokens)[topk_idx].tolist()
 
         next_token = np.random.choice(topk_tokens)
+
+    elif strategy == "top-k":
+
+        zero_prob_idx = np.argsort(probs)[:-k]
+
+        top_k_probs = np.array(probs)
+        top_k_probs[zero_prob_idx] = 0
+
+        with np.errstate(divide="ignore"):  # ignore np.log(0) warning
+            top_k_probs = softmax(np.log(top_k_probs))
+
+        next_token = np.random.choice(tokens, p=top_k_probs)
+
+    elif strategy == "top-p-uniform":  # TODO
+        raise NotImplementedError()
 
     elif strategy == "top-p":  # TODO
         raise NotImplementedError()
@@ -61,7 +79,7 @@ def get_next_token(
     else:
         raise ValueError(
             f"{strategy} strategy is not known, "
-            "use 'sampling', 'top-k', 'top-p' or 'beam search'"
+            "use 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' or 'beam search'"
         )
 
     return next_token
@@ -81,11 +99,12 @@ def generate(
     :param NGramLanguageModel language_model: language model
     :param str prefix: prefix before sequence generation
     :param str strategy: sampling strategy
-        (available: 'sampling', 'top-k', 'top-p' and 'beam search') (default: 'sampling')
+        (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')
+        (default: 'sampling')
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding
         (only for 'sampling' sampling strategy) (default: 0.0)
-    :param int k: top-k parameter (only for 'top-k' sampling strategy) (default: 10)
+    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' sampling strategy) (default: 10)
     :param int max_length: max number of generated words (default: 100)
     :return: generated sequence
     :rtype: str

@@ -55,9 +55,9 @@ Required arguments:
 
 Optional arguments:
 - **--prefix** - prefix before sequence generation (default: *""*)
-- **--sampling** - sampling strategy (available: "sampling", "top-k", "top-p" and "beam search") (default: *"sampling"*)
+- **--sampling** - sampling strategy (available: "sampling", "top-k-uniform", "top-k", "top-p-uniform", "top-p" and "beam search") (default: *"sampling"*)
 - **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (only for "sampling" sampling strategy) (default: *0.0*)
-- **--k** - top-k parameter (only for "top-k" sampling strategy) (default: *10*)
+- **--k** - top-k parameter (only for "top-k-uniform" and "top-k" sampling strategy) (default: *10*)
 - **--max_length** - max number of generated words (default: *100*)
 - **--seed** - random seed (default: *42*)
 
