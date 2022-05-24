@@ -105,6 +105,7 @@ class NGramLanguageModel:
         return self.get_possible_next_tokens(prefix).get(next_token, 0.0)
 
 
+# TODO: validate it with correct inheritence
 class LaplaceLanguageModel(NGramLanguageModel):
     """
     N-gram Language Model with add-k (Laplace) smoothing.
