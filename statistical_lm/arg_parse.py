@@ -127,7 +127,7 @@ def get_inference_args() -> Namespace:
             "top-p",
             "beam search",
         ],
-        help="sampling strategy (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')",
+        help="decoding strategy (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')",
     )
     parser.add_argument(
         "--temperature",
@@ -141,7 +141,7 @@ def get_inference_args() -> Namespace:
         type=int,
         required=False,
         default=10,
-        help="top-k parameter (only for 'top-k-uniform' and 'top-k' sampling strategy)",
+        help="top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy)",
     )
     parser.add_argument(
         "--max_length",

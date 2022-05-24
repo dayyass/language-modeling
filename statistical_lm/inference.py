@@ -23,13 +23,13 @@ def get_next_token(
 
     :param NGramLanguageModel language_model: language model
     :param str prefix: prefix before sequence generation
-    :param str strategy: sampling strategy
+    :param str strategy: decoding strategy
         (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')
         (default: 'sampling')
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding
-        (only for 'sampling' sampling strategy) (default: 0.0)
-    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' sampling strategy) (default: 10)
+        (only for 'sampling' decoding strategy) (default: 0.0)
+    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy) (default: 10)
     :return: next token
     :rtype: str
     """
@@ -98,13 +98,13 @@ def generate(
 
     :param NGramLanguageModel language_model: language model
     :param str prefix: prefix before sequence generation
-    :param str strategy: sampling strategy
+    :param str strategy: decoding strategy
         (available: 'sampling', 'top-k-uniform', 'top-k', 'top-p-uniform', 'top-p' and 'beam search')
         (default: 'sampling')
     :param float temperature: sampling temperature,
         if temperature == 0.0, always takes most likely token - greedy decoding
-        (only for 'sampling' sampling strategy) (default: 0.0)
-    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' sampling strategy) (default: 10)
+        (only for 'sampling' decoding strategy) (default: 0.0)
+    :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy) (default: 10)
     :param int max_length: max number of generated words (default: 100)
     :return: generated sequence
     :rtype: str

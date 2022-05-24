@@ -55,9 +55,9 @@ Required arguments:
 
 Optional arguments:
 - **--prefix** - prefix before sequence generation (default: *""*)
-- **--sampling** - sampling strategy (available: "sampling", "top-k-uniform", "top-k", "top-p-uniform", "top-p" and "beam search") (default: *"sampling"*)
-- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (only for "sampling" sampling strategy) (default: *0.0*)
-- **--k** - top-k parameter (only for "top-k-uniform" and "top-k" sampling strategy) (default: *10*)
+- **--strategy** - decoding strategy (available: "sampling", "top-k-uniform", "top-k", "top-p-uniform", "top-p" and "beam search") (default: *"sampling"*)
+- **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (only for "sampling" decoding strategy) (default: *0.0*)
+- **--k** - top-k parameter (only for "top-k-uniform" and "top-k" decoding strategy) (default: *10*)
 - **--max_length** - max number of generated words (default: *100*)
 - **--seed** - random seed (default: *42*)
 
@@ -131,6 +131,15 @@ List of implemented models:
 - [x] [N-gram Language Model](https://github.com/dayyass/language_modeling/blob/b962edac04dfe10a3f87dfa16d4d37508af6d5de/model.py#L57)
 - [x] [RNN Language Model](https://github.com/dayyass/language_modeling/blob/407d02b79d6d7fd614dc7c5fd235ad269cddcb2d/rnn_lm/model.py#L6) (char-based)
 - [ ] GPT Language Model
+
+### Decoding Strategy
+- [x] greedy
+- [x] temperature sampling
+- [x] top-k-uniform
+- [x] top-k
+- [ ] top-p-uniform
+- [ ] top-p
+- [ ] beam search
 
 ### Smoothing (only for N-gram Language Models)
 - [x] no smoothing
