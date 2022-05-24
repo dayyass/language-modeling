@@ -144,6 +144,13 @@ def get_inference_args() -> Namespace:
         help="top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy)",
     )
     parser.add_argument(
+        "--p",
+        type=float,
+        required=False,
+        default=0.9,
+        help="top-p parameter (only for 'top-p-uniform' and 'top-p' decoding strategy)",
+    )
+    parser.add_argument(
         "--max_length",
         type=int,
         required=False,

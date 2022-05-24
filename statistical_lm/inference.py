@@ -17,6 +17,7 @@ def get_next_token(
     strategy: str,
     temperature: float = 0.0,
     k: int = 10,
+    p: float = 0.9,
 ) -> str:
     """
     Sample word using language model, prefix and temperature.
@@ -30,6 +31,7 @@ def get_next_token(
         if temperature == 0.0, always takes most likely token - greedy decoding
         (only for 'sampling' decoding strategy) (default: 0.0)
     :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy) (default: 10)
+    :param float p: top-p parameter (only for 'top-p-uniform' and 'top-p' decoding strategy) (default: 0.9)
     :return: next token
     :rtype: str
     """
@@ -67,11 +69,26 @@ def get_next_token(
 
         next_token = np.random.choice(tokens, p=top_k_probs)
 
-    elif strategy == "top-p-uniform":  # TODO
-        raise NotImplementedError()
+    elif strategy in ["top-p-uniform", "top-p"]:
 
-    elif strategy == "top-p":  # TODO
-        raise NotImplementedError()
+        token2prob_sorted = sorted(token2prob.items(), key=lambda x: x[1], reverse=True)
+
+        cum_prob = 0
+        p_tokens, p_probs = [], []
+
+        for token, prob in token2prob_sorted:
+            if cum_prob > p:
+                break
+            p_tokens.append(token)
+            p_probs.append(prob)
+            cum_prob += prob
+
+        if strategy == "top-p-uniform":
+            next_token = np.random.choice(p_tokens)
+
+        elif strategy == "top-p":
+            p_probs = softmax(np.log(p_probs))
+            next_token = np.random.choice(p_tokens, p=p_probs)
 
     elif strategy == "beam search":  # TODO
         raise NotImplementedError()
@@ -91,6 +108,7 @@ def generate(
     strategy: str,
     temperature: float = 0.0,
     k: int = 10,
+    p: float = 0.9,
     max_length: int = 100,
 ) -> str:
     """
@@ -105,6 +123,7 @@ def generate(
         if temperature == 0.0, always takes most likely token - greedy decoding
         (only for 'sampling' decoding strategy) (default: 0.0)
     :param int k: top-k parameter (only for 'top-k-uniform' and 'top-k' decoding strategy) (default: 10)
+    :param float p: top-p parameter (only for 'top-p-uniform' and 'top-p' decoding strategy) (default: 0.9)
     :param int max_length: max number of generated words (default: 100)
     :return: generated sequence
     :rtype: str
@@ -117,6 +136,7 @@ def generate(
             strategy=strategy,
             temperature=temperature,
             k=k,
+            p=p,
         )
         prefix += f" {next_token}"
 
@@ -147,6 +167,7 @@ if __name__ == "__main__":
         strategy=args.strategy,
         temperature=args.temperature,
         k=args.k,
+        p=args.p,
         max_length=args.max_length,
     )
 

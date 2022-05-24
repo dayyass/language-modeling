@@ -58,6 +58,7 @@ Optional arguments:
 - **--strategy** - decoding strategy (available: "sampling", "top-k-uniform", "top-k", "top-p-uniform", "top-p" and "beam search") (default: *"sampling"*)
 - **--temperature** - sampling temperature, if temperature == 0.0, always takes most likely token - greedy decoding (only for "sampling" decoding strategy) (default: *0.0*)
 - **--k** - top-k parameter (only for "top-k-uniform" and "top-k" decoding strategy) (default: *10*)
+- **--p** - top-p parameter (only for "top-p-uniform" and "top-p" decoding strategy) (default: *0.9*)
 - **--max_length** - max number of generated words (default: *100*)
 - **--seed** - random seed (default: *42*)
 
@@ -137,8 +138,8 @@ List of implemented models:
 - [x] temperature sampling
 - [x] top-k-uniform
 - [x] top-k
-- [ ] top-p-uniform
-- [ ] top-p
+- [x] top-p-uniform
+- [x] top-p
 - [ ] beam search
 
 ### Smoothing (only for N-gram Language Models)
